@@ -1,0 +1,46 @@
+{
+  "id": "jclib.sample.visualstudio",
+  "name": "JC Lib Sample Pack",
+  "language": "c",
+  "version": "1.0.0",
+  "readOnly": false,
+  "environments": [
+    {
+      "name": "Sample",
+      "libraries": [
+        {
+          "name": "Utilities",
+          "categories": [
+            {
+              "name": "Imported pack demo",
+              "functions": [
+                {
+                  "name": "jc_sample_log",
+                  "returnType": "void",
+                  "signature": "void jc_sample_log(const char * message);",
+                  "insertText": "jc_sample_log(\"hello from imported pack\");",
+                  "header": "sample.h",
+                  "library": "Utilities",
+                  "category": "Imported pack demo",
+                  "description": "Simple function used to validate global and solution-level pack imports.",
+                  "longDescription": "Simple function used to validate global and solution-level pack imports.",
+                  "parameters": [
+                    {
+                      "name": "message",
+                      "type": "const char *",
+                      "editorType": "text",
+                      "defaultValue": "\"hello from imported pack\""
+                    }
+                  ],
+                  "symbolKind": "function",
+                  "declaration": "void jc_sample_log(const char *message);",
+                  "environment": "Sample"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

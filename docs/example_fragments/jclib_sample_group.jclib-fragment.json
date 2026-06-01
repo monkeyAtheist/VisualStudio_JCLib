@@ -1,0 +1,33 @@
+{
+  "format": "jclib.partial.v1",
+  "kind": "group",
+  "exportedFromPack": "jclib.sample.fragment",
+  "exportedAtUtc": "2026-06-01T00:00:00.0000000Z",
+  "node": {
+    "name": "Imported diagnostics",
+    "functions": [
+      {
+        "name": "jc_fragment_trace",
+        "symbolKind": "function",
+        "returnType": "void",
+        "signature": "void jc_fragment_trace(const char * message)",
+        "declaration": "void jc_fragment_trace(const char * message);",
+        "insertText": "jc_fragment_trace(message);",
+        "description": "Sample function imported from a partial JC Lib fragment.",
+        "longDescription": "Used to verify partial group import in the Visual Studio Visual Pack Editor.",
+        "header": "jc_fragment.h",
+        "parameters": [
+          {
+            "name": "message",
+            "type": "const char *",
+            "editorType": "text",
+            "defaultValue": "\"hello from fragment\"",
+            "presets": [],
+            "options": []
+          }
+        ]
+      }
+    ],
+    "groups": []
+  }
+}

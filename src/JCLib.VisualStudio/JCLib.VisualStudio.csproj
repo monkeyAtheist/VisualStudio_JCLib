@@ -1,0 +1,59 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>net472</TargetFramework>
+    <UseWPF>true</UseWPF>
+    <Nullable>enable</Nullable>
+    <LangVersion>14</LangVersion>
+    <RootNamespace>JCLib.VisualStudio</RootNamespace>
+    <AssemblyName>JCLib.VisualStudio</AssemblyName>
+
+    <!-- VSIX settings supported by Visual Studio 2026 18.5+ -->
+    <VSSDKBuildToolsAutoSetup>true</VSSDKBuildToolsAutoSetup>
+    <VsixDeployOnDebug>true</VsixDeployOnDebug>
+    <GeneratePkgDefFile>true</GeneratePkgDefFile>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectCapability Include="CreateVsixContainer" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.VisualStudio.SDK" Version="17.14.40265" ExcludeAssets="runtime" />
+    <PackageReference Include="Microsoft.VSSDK.BuildTools" Version="18.5.38461" />
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
+  </ItemGroup>
+
+  <!-- OleMenuCommandService derives from System.ComponentModel.Design.MenuCommandService.
+       SDK-style net472 projects do not automatically add the System.Design reference. -->
+  <ItemGroup>
+    <Reference Include="System.Design" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Runtime.Serialization" />
+    <Reference Include="System.Windows.Forms" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <!-- The generated command table must be embedded under the same name
+         requested by [ProvideMenuResource("Menus.ctmenu", 1)]. -->
+    <VSCTCompile Include="Commands\JCLibPackage.vsct">
+      <ResourceName>Menus.ctmenu</ResourceName>
+      <SubType>Designer</SubType>
+    </VSCTCompile>
+
+    <Content Include="Resources\jc-lib-icon.png">
+      <IncludeInVSIX>true</IncludeInVSIX>
+    </Content>
+
+    <!-- Bundled now so phase 2 can load the real JC Lib catalog without repackaging the project. -->
+    <Content Include="Assets\Packs\default_pack.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <IncludeInVSIX>true</IncludeInVSIX>
+    </Content>
+
+    <!-- Embedded fallback: the first read-only browser does not depend on the
+         final installation layout of the VSIX content files. -->
+    <EmbeddedResource Include="Assets\Packs\default_pack.json">
+      <LogicalName>JCLib.VisualStudio.Assets.Packs.default_pack.json</LogicalName>
+    </EmbeddedResource>
+  </ItemGroup>
+</Project>

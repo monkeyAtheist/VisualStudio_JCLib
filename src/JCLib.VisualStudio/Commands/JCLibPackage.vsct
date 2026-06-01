@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<CommandTable xmlns="http://schemas.microsoft.com/VisualStudio/2005-10-18/CommandTable">
+  <Extern href="stdidcmd.h" />
+  <Extern href="vsshlids.h" />
+
+  <Commands package="guidJCLibPackage">
+    <Groups>
+      <!-- The same JC Lib command is exposed in the text editor context menu. -->
+      <Group guid="guidJCLibCommandSet" id="grpJCLibCodeContext" priority="0x0600">
+        <Parent guid="guidSHLMainMenu" id="IDM_VS_CTXT_CODEWIN" />
+      </Group>
+    </Groups>
+    <Buttons>
+      <Button guid="guidJCLibCommandSet" id="cmdidShowJCLibToolWindow" priority="0x0100" type="Button">
+        <!-- Built-in Visual Studio group: View > Other Windows -->
+        <Parent guid="guidSHLMainMenu" id="IDG_VS_WNDO_OTRWNDWS1" />
+        <Strings><ButtonText>JC Lib</ButtonText></Strings>
+      </Button>
+    </Buttons>
+  </Commands>
+
+  <CommandPlacements>
+    <CommandPlacement guid="guidJCLibCommandSet" id="cmdidShowJCLibToolWindow" priority="0x0600">
+      <Parent guid="guidJCLibCommandSet" id="grpJCLibCodeContext" />
+    </CommandPlacement>
+  </CommandPlacements>
+
+  <KeyBindings>
+    <!-- Global default shortcut. It remains user-overridable from Tools > Options > Environment > Keyboard. -->
+    <KeyBinding guid="guidJCLibCommandSet" id="cmdidShowJCLibToolWindow" editor="guidVSStd97" key1="J" mod1="CONTROL" mod2="ALT" />
+  </KeyBindings>
+
+  <Symbols>
+    <GuidSymbol name="guidJCLibPackage" value="{6f22038e-dc48-46db-9f71-b3553a5ec9be}" />
+    <GuidSymbol name="guidJCLibCommandSet" value="{6371953d-2183-42f5-91d4-3086ff77c11f}">
+      <IDSymbol name="cmdidShowJCLibToolWindow" value="0x0100" />
+      <IDSymbol name="grpJCLibCodeContext" value="0x0200" />
+    </GuidSymbol>
+  </Symbols>
+</CommandTable>

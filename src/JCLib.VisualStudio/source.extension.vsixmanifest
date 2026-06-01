@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PackageManifest Version="2.0.0"
+                 xmlns="http://schemas.microsoft.com/developer/vsx-schema/2011"
+                 xmlns:d="http://schemas.microsoft.com/developer/vsx-schema-design/2011">
+  <Metadata>
+    <Identity Id="JCLib.VisualStudio.6f22038e-dc48-46db-9f71-b3553a5ec9be"
+              Version="1.2.0"
+              Language="fr-FR"
+              Publisher="Jerry Crozet" />
+    <DisplayName>JC Lib - Visual Studio</DisplayName>
+    <Description xml:space="preserve">Navigateur JC Lib Visual Studio : listes déroulantes à contraste configurable, mode packs externes uniquement avec fallback embarqué optionnel, favoris, récents, filtres, insertion rapide et Visual Pack Editor WPF avancé.</Description>
+    <Icon>Resources\jc-lib-icon.png</Icon>
+    <PreviewImage>Resources\jc-lib-icon.png</PreviewImage>
+    <Tags>JC Lib, snippets, libraries, catalog browser, tool window, Visual Studio</Tags>
+  </Metadata>
+
+  <Installation>
+    <!-- Managed AnyCPU payload: support both x64 and ARM64 Visual Studio installations. -->
+    <InstallationTarget Id="Microsoft.VisualStudio.Community" Version="[17.0,)">
+      <ProductArchitecture>amd64</ProductArchitecture>
+    </InstallationTarget>
+    <InstallationTarget Id="Microsoft.VisualStudio.Community" Version="[17.0,)">
+      <ProductArchitecture>arm64</ProductArchitecture>
+    </InstallationTarget>
+
+    <InstallationTarget Id="Microsoft.VisualStudio.Pro" Version="[17.0,)">
+      <ProductArchitecture>amd64</ProductArchitecture>
+    </InstallationTarget>
+    <InstallationTarget Id="Microsoft.VisualStudio.Pro" Version="[17.0,)">
+      <ProductArchitecture>arm64</ProductArchitecture>
+    </InstallationTarget>
+
+    <InstallationTarget Id="Microsoft.VisualStudio.Enterprise" Version="[17.0,)">
+      <ProductArchitecture>amd64</ProductArchitecture>
+    </InstallationTarget>
+    <InstallationTarget Id="Microsoft.VisualStudio.Enterprise" Version="[17.0,)">
+      <ProductArchitecture>arm64</ProductArchitecture>
+    </InstallationTarget>
+  </Installation>
+
+  <Prerequisites>
+    <Prerequisite Id="Microsoft.VisualStudio.Component.CoreEditor"
+                  Version="[17.0,)"
+                  DisplayName="Visual Studio core editor" />
+  </Prerequisites>
+
+  <Assets>
+    <Asset Type="Microsoft.VisualStudio.VsPackage"
+           d:Source="Project"
+           d:ProjectName="%CurrentProject%"
+           Path="|%CurrentProject%;PkgdefProjectOutputGroup|" />
+  </Assets>
+</PackageManifest>
