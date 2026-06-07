@@ -496,7 +496,7 @@ public partial class JCLibToolWindowControl : UserControl
             _parameterValues = SnippetParameterService.CreateEditorState(entry);
             ReturnTargetTextBox.Text = string.Empty;
 
-            bool showParameters = entry.IsFunction && (_parameterValues.Count > 0 || entry.HasReturnValue);
+            bool showParameters = _parameterValues.Count > 0 || entry.HasReturnValue;
             ParametersExpander.Visibility = showParameters ? Visibility.Visible : Visibility.Collapsed;
             ReturnTargetGrid.Visibility = entry.HasReturnValue ? Visibility.Visible : Visibility.Collapsed;
             ParametersSummaryText.Text = _parameterValues.Count == 0
@@ -534,13 +534,24 @@ public partial class JCLibToolWindowControl : UserControl
         });
         content.Children.Add(new TextBlock
         {
-            Text = $"Éditeur : {parameterValue.EditorType}",
+            Text = $"Éditeur : {parameterValue.EditorType}" + (parameterValue.Parameter.Optional ? " — facultatif" : string.Empty),
             Foreground = (System.Windows.Media.Brush)FindResource("SecondaryTextBrush"),
-            Margin = new Thickness(0, 2, 0, 4),
+            Margin = new Thickness(0, 2, 0, 2),
         });
+        if (!string.IsNullOrWhiteSpace(parameterValue.Parameter.Description))
+        {
+            content.Children.Add(new TextBlock
+            {
+                Text = parameterValue.Parameter.Description,
+                Foreground = (System.Windows.Media.Brush)FindResource("SecondaryTextBrush"),
+                Margin = new Thickness(0, 0, 0, 4),
+                TextWrapping = TextWrapping.Wrap,
+            });
+        }
 
         var editorGrid = new Grid();
         editorGrid.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(1, GridUnitType.Star) });
+        editorGrid.ColumnDefinitions.Add(new ColumnDefinition { Width = GridLength.Auto });
         editorGrid.ColumnDefinitions.Add(new ColumnDefinition { Width = GridLength.Auto });
         editorGrid.ColumnDefinitions.Add(new ColumnDefinition { Width = GridLength.Auto });
         content.Children.Add(editorGrid);
@@ -558,19 +569,36 @@ public partial class JCLibToolWindowControl : UserControl
         textBox.Tag = binding;
         _parameterEditors.Add(binding);
 
-        if (parameterValue.SuggestedValues.Count > 0)
+        if (parameterValue.SuggestedChoices.Count > 0)
         {
             var suggestions = new ComboBox
             {
-                Width = 112,
+                Width = 150,
                 Margin = new Thickness(6, 0, 0, 0),
-                ItemsSource = parameterValue.SuggestedValues,
-                ToolTip = "Valeurs usuelles",
+                ItemsSource = parameterValue.SuggestedChoices,
+                DisplayMemberPath = "DisplayLabel",
+                ToolTip = "Valeurs usuelles documentées",
             };
             suggestions.SelectionChanged += OnSuggestionSelectionChanged;
             suggestions.Tag = binding;
             Grid.SetColumn(suggestions, 1);
             editorGrid.Children.Add(suggestions);
+        }
+
+        CatalogPickerConfig? pickerConfig = SnippetParameterService.CreateEffectivePickerConfig(parameterValue);
+        if (pickerConfig is not null && pickerConfig.FlattenChoices().Count > 0)
+        {
+            var pickerButton = new Button
+            {
+                Margin = new Thickness(6, 0, 0, 0),
+                Padding = new Thickness(8, 3, 8, 3),
+                Content = pickerConfig.MultiSelect ? "Choix multiples..." : "Choisir...",
+                ToolTip = pickerConfig.MultiSelect ? "Ouvrir la fenêtre de sélection multiple" : "Ouvrir la fenêtre de choix documentés",
+                Tag = binding,
+            };
+            pickerButton.Click += OnStructuredPickerClick;
+            Grid.SetColumn(pickerButton, 2);
+            editorGrid.Children.Add(pickerButton);
         }
 
         if (parameterValue.EditorType == "pathFile" || parameterValue.EditorType == "pathFolder")
@@ -584,7 +612,7 @@ public partial class JCLibToolWindowControl : UserControl
                 Tag = binding,
             };
             browseButton.Click += OnBrowseParameterClick;
-            Grid.SetColumn(browseButton, 2);
+            Grid.SetColumn(browseButton, 3);
             editorGrid.Children.Add(browseButton);
         }
 
@@ -1081,12 +1109,28 @@ public partial class JCLibToolWindowControl : UserControl
 
     private void OnSuggestionSelectionChanged(object sender, SelectionChangedEventArgs e)
     {
-        if (_buildingParameterUi || sender is not ComboBox combo || combo.Tag is not ParameterEditorBinding binding || combo.SelectedItem is not string value)
+        if (_buildingParameterUi || sender is not ComboBox combo || combo.Tag is not ParameterEditorBinding binding || combo.SelectedItem is not CatalogChoice choice)
         {
             return;
         }
-        binding.TextBox.Text = value;
+        binding.TextBox.Text = choice.Value;
         combo.SelectedIndex = -1;
+    }
+
+    private void OnStructuredPickerClick(object sender, RoutedEventArgs e)
+    {
+        if (sender is not Button button || button.Tag is not ParameterEditorBinding binding) return;
+        CatalogPickerConfig? config = SnippetParameterService.CreateEffectivePickerConfig(binding.ParameterValue);
+        if (config is null) return;
+
+        var dialog = new StructuredChoiceDialog(config, binding.TextBox.Text)
+        {
+            Owner = Window.GetWindow(this),
+        };
+        if (dialog.ShowDialog() == true)
+        {
+            binding.TextBox.Text = dialog.SelectedValue;
+        }
     }
 
     private void OnBrowseParameterClick(object sender, RoutedEventArgs e)
@@ -1104,7 +1148,7 @@ public partial class JCLibToolWindowControl : UserControl
             };
             if (dialog.ShowDialog() == true)
             {
-                binding.TextBox.Text = SnippetParameterService.QuoteCStringPath(dialog.FileName);
+                binding.TextBox.Text = SnippetParameterService.FormatPathForTemplate(_selectedEntry, binding.ParameterValue.Parameter, dialog.FileName);
             }
             return;
         }
@@ -1117,7 +1161,7 @@ public partial class JCLibToolWindowControl : UserControl
         {
             if (dialog.ShowDialog() == System.Windows.Forms.DialogResult.OK)
             {
-                binding.TextBox.Text = SnippetParameterService.QuoteCStringPath(dialog.SelectedPath);
+                binding.TextBox.Text = SnippetParameterService.FormatPathForTemplate(_selectedEntry, binding.ParameterValue.Parameter, dialog.SelectedPath);
             }
         }
     }

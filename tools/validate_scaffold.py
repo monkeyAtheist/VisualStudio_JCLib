@@ -130,8 +130,8 @@ def main() -> int:
     assert '<ResourceName>Menus.ctmenu</ResourceName>' in csproj_text
     assert '<LogicalName>JCLib.VisualStudio.Assets.Packs.default_pack.json</LogicalName>' in csproj_text
     assert '[ProvideMenuResource("Menus.ctmenu", 1)]' in package_text
-    assert '"1.2.0"' in package_text
-    assert 'Version="1.2.0"' in manifest_text
+    assert '"1.3.1"' in package_text
+    assert 'Version="1.3.1"' in manifest_text
     assert '<ProductArchitecture>amd64</ProductArchitecture>' in manifest_text
     assert '<ProductArchitecture>arm64</ProductArchitecture>' in manifest_text
     assert 'IDG_VS_WNDO_OTRWNDWS1' in vsct_text
@@ -173,7 +173,7 @@ def main() -> int:
         'PackNameTextBox', 'PackVersionTextBox', 'ElementNameTextBox', 'SymbolKindTextBox',
         'InsertTextTextBox', 'ValidationIssuesListBox', 'SaveButton', 'SaveAndCloseButton',
         'ParametersListBox', 'AddParameterButton', 'DeleteParameterButton', 'ParameterNameTextBox',
-        'ParameterPresetsTextBox', 'OnAddEnvironmentClick', 'OnAddLibraryClick', 'OnAddCategoryClick',
+        'ParameterPresetsTextBox', 'ParameterDescriptionTextBox', 'ParameterPlaceholderTextBox', 'ParameterOptionalCheckBox', 'ParameterPickerConfigTextBox', 'OnParameterPickerConfigLostFocus', 'OnAddEnvironmentClick', 'OnAddLibraryClick', 'OnAddCategoryClick',
         'OnAddGroupClick', 'OnAddElementClick', 'OnDeleteStructureClick', 'OnDeleteElementClick',
         'OnAddParameterClick', 'OnDeleteParameterClick', 'OnSaveClick', 'OnSaveAndCloseClick',
         'BatchSelectionSummaryText', 'DuplicateSelectionButton', 'MoveUpButton', 'MoveDownButton',
@@ -203,7 +203,7 @@ def main() -> int:
 
     for required in [
         'JObject.Parse', 'AddEnvironment', 'AddLibrary', 'AddCategory', 'AddGroup', 'AddElement',
-        'DeleteNode', 'AddParameter', 'DeleteParameter', 'SetParameterListProperty', 'NormalizeNames',
+        'DeleteNode', 'AddParameter', 'DeleteParameter', 'SetParameterChoiceListProperty', 'SetParameterBooleanProperty', 'SetParameterObjectProperty', 'NormalizeNames',
         'ValidateFunctions', 'ValidateParameters', 'ValidateNamedChildren', 'SynchronizeElementMetadata',
         'Nom d\'élément dupliqué', 'File.WriteAllText', '.jclib.tmp', 'Formatting.Indented',
         'GetBatchSelectedElements', 'ClearBatchSelection', 'GetFunctionContainers', 'DuplicateElements',
@@ -235,7 +235,7 @@ def main() -> int:
         assert required in move_target_code_text, required
 
     for required in [
-        'EmbeddedPackResource', 'DataContractJsonSerializer', 'GetGlobalPacksDirectory',
+        'EmbeddedPackResource', 'JsonConvert.DeserializeObject<PackDto>', 'GetGlobalPacksDirectory',
         'GetSolutionPacksDirectory', 'DetectConflicts', 'ValidatePackFile',
         'CatalogPackSourceKind.GlobalUser', 'CatalogPackSourceKind.Solution', 'ResolveEntries',
         'BuildResolvedRoot', 'SetPackEnabled', 'DeletePack', 'CreatePack', 'DuplicatePack',
@@ -261,6 +261,16 @@ def main() -> int:
     assert 'BuildInsertText' in parameter_service_text
     assert 'ExtractDefaultArguments' in parameter_service_text
     assert 'QuoteCStringPath' in parameter_service_text
+    assert 'ApplyParameterizedInsertTemplate' in parameter_service_text
+    assert 'CreateEffectivePickerConfig' in parameter_service_text
+    assert 'FormatPathForTemplate' in parameter_service_text
+    assert 'JsonConvert.DeserializeObject<PackDto>' in loader_text
+    assert 'ParseChoices(parameter.Options)' in loader_text
+    assert 'ParsePickerConfig(parameter.PickerConfig)' in loader_text
+    structured_dialog_text = require(PROJECT / 'ToolWindows' / 'StructuredChoiceDialog.cs')
+    for required in ['StructuredChoiceDialog', 'SelectionMode.Multiple', 'ValueSeparator', 'EmptyValue', 'BuildSelectedValue']:
+        assert required in structured_dialog_text, required
+    assert_balanced(structured_dialog_text, '{', '}', 'C# braces in StructuredChoiceDialog')
     assert 'GetActiveView(0, null' in editor_insert_text
     assert 'ReplaceLines(' in editor_insert_text
     assert 'ApplyBaseIndentation' in editor_insert_text
@@ -393,7 +403,7 @@ def main() -> int:
     assert [group['name'] for group in category_destination['groups']] == ['Diagnostics Copy', 'Diagnostics Copy2']
     assert imported['functions'][0]['parameters'][0]['name'] == 'message'
 
-    print('JC Lib Visual Studio 1.2.0 scaffold validation: OK')
+    print('JC Lib Visual Studio 1.3.1 scaffold validation: OK')
     print(f'Bundled environments: {environment_count}')
     print(f'Bundled elements: {symbol_count}')
     print(f'Parameterized functions: {parameterized_functions}')

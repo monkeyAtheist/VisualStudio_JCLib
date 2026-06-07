@@ -1,0 +1,238 @@
+{
+  "id": "jclib-visualstudio-advanced-parameter-fixture",
+  "name": "JC Lib Visual Studio Advanced Parameter Fixture",
+  "version": "1.0.0",
+  "environments": [
+    {
+      "name": "Validation",
+      "libraries": [
+        {
+          "name": "Structured Parameters",
+          "categories": [
+            {
+              "name": "Compatibility Matrix",
+              "functions": [
+                {
+                  "name": "configure_device",
+                  "symbolKind": "function",
+                  "returnType": "int",
+                  "signature": "int configure_device(const char *path, int mode, unsigned flags);",
+                  "insertText": "configure_device({{path}}, {{mode}}, {{flags}})",
+                  "description": "Template callable with file browser, documented enum and multi-select flags.",
+                  "environment": "Validation",
+                  "library": "Structured Parameters",
+                  "category": "Compatibility Matrix",
+                  "parameters": [
+                    {
+                      "name": "path",
+                      "type": "const char *",
+                      "description": "Configuration file path.",
+                      "editorType": "pathFile",
+                      "defaultValue": "\"config/device.json\"",
+                      "placeholder": "\"C:\\\\workspace\\\\config\\\\device.json\""
+                    },
+                    {
+                      "name": "mode",
+                      "type": "int",
+                      "description": "Device mode.",
+                      "editorType": "enum",
+                      "defaultValue": "MODE_SAFE",
+                      "options": [
+                        {
+                          "value": "MODE_SAFE",
+                          "label": "Safe mode",
+                          "description": "Apply conservative settings."
+                        },
+                        {
+                          "value": "MODE_FAST",
+                          "label": "Fast mode",
+                          "description": "Prioritize throughput."
+                        }
+                      ],
+                      "pickerConfig": {
+                        "title": "Select device mode",
+                        "selectionLabel": "Selected mode",
+                        "subtitle": "Exactly one operating mode.",
+                        "multiSelect": false,
+                        "valueSeparator": " | ",
+                        "emptyValue": "",
+                        "applyDefaultIfEmpty": false,
+                        "sections": [
+                          {
+                            "label": "Modes",
+                            "description": "Operating modes.",
+                            "groups": [
+                              {
+                                "label": "Available values",
+                                "description": "Choose one mode.",
+                                "items": [
+                                  {
+                                    "value": "MODE_SAFE",
+                                    "label": "Safe mode",
+                                    "description": "Apply conservative settings."
+                                  },
+                                  {
+                                    "value": "MODE_FAST",
+                                    "label": "Fast mode",
+                                    "description": "Prioritize throughput."
+                                  }
+                                ]
+                              }
+                            ]
+                          }
+                        ]
+                      }
+                    },
+                    {
+                      "name": "flags",
+                      "type": "unsigned",
+                      "description": "Compatible bit flags.",
+                      "editorType": "enum",
+                      "defaultValue": "0",
+                      "options": [
+                        {
+                          "value": "FLAG_LOG",
+                          "label": "Logging",
+                          "description": "Enable diagnostics."
+                        },
+                        {
+                          "value": "FLAG_RETRY",
+                          "label": "Retry",
+                          "description": "Retry transient failures."
+                        }
+                      ],
+                      "pickerConfig": {
+                        "title": "Select flags",
+                        "selectionLabel": "Combined flags",
+                        "subtitle": "Choose zero, one or several flags.",
+                        "multiSelect": true,
+                        "valueSeparator": " | ",
+                        "emptyValue": "0",
+                        "applyDefaultIfEmpty": false,
+                        "sections": [
+                          {
+                            "label": "Flags",
+                            "groups": [
+                              {
+                                "label": "Compatible flags",
+                                "items": [
+                                  {
+                                    "value": "FLAG_LOG",
+                                    "label": "Logging",
+                                    "description": "Enable diagnostics."
+                                  },
+                                  {
+                                    "value": "FLAG_RETRY",
+                                    "label": "Retry",
+                                    "description": "Retry transient failures."
+                                  }
+                                ]
+                              }
+                            ]
+                          }
+                        ]
+                      }
+                    }
+                  ]
+                },
+                {
+                  "name": "structured declaration",
+                  "symbolKind": "struct",
+                  "returnType": "type",
+                  "signature": "typedef struct DeviceConfig DeviceConfig;",
+                  "insertText": "typedef struct {{name}}\n{\n    {{fields}}\n} {{name}};",
+                  "description": "Non-callable parameterized declaration.",
+                  "environment": "Validation",
+                  "library": "Structured Parameters",
+                  "category": "Compatibility Matrix",
+                  "parameters": [
+                    {
+                      "name": "name",
+                      "type": "identifier",
+                      "description": "Generated structure name.",
+                      "editorType": "text",
+                      "defaultValue": "DeviceConfig"
+                    },
+                    {
+                      "name": "fields",
+                      "type": "field declarations",
+                      "description": "Fields inserted verbatim.",
+                      "editorType": "text",
+                      "defaultValue": "int enabled;"
+                    }
+                  ]
+                },
+                {
+                  "name": "optional fragment",
+                  "symbolKind": "snippet",
+                  "returnType": "snippet",
+                  "signature": "optional fragment",
+                  "insertText": "command {{required}} {{optionalFlags}}",
+                  "description": "Explicit empty default must remain empty.",
+                  "environment": "Validation",
+                  "library": "Structured Parameters",
+                  "category": "Compatibility Matrix",
+                  "parameters": [
+                    {
+                      "name": "required",
+                      "type": "text",
+                      "description": "Required token.",
+                      "editorType": "text",
+                      "defaultValue": "run"
+                    },
+                    {
+                      "name": "optionalFlags",
+                      "type": "CLI flags",
+                      "description": "Optional switches.",
+                      "editorType": "enum",
+                      "defaultValue": "",
+                      "optional": true,
+                      "options": [
+                        {
+                          "value": "--verbose",
+                          "label": "Verbose",
+                          "description": "Enable verbose output."
+                        }
+                      ],
+                      "pickerConfig": {
+                        "title": "Select optional flags",
+                        "selectionLabel": "Flags",
+                        "multiSelect": true,
+                        "valueSeparator": " ",
+                        "emptyValue": "",
+                        "applyDefaultIfEmpty": false,
+                        "sections": [
+                          {
+                            "label": "Flags",
+                            "groups": [
+                              {
+                                "label": "Options",
+                                "items": [
+                                  {
+                                    "value": "",
+                                    "label": "No optional flag",
+                                    "description": "Insert no optional switch."
+                                  },
+                                  {
+                                    "value": "--verbose",
+                                    "label": "Verbose",
+                                    "description": "Enable verbose output."
+                                  }
+                                ]
+                              }
+                            ]
+                          }
+                        ]
+                      }
+                    }
+                  ]
+                }
+              ],
+              "groups": []
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

@@ -72,7 +72,7 @@
         </Grid.RowDefinitions>
 
         <StackPanel Grid.Row="0">
-            <TextBlock FontSize="19" FontWeight="SemiBold" Text="JC Lib — Visual Pack Editor avancé 1.2.0" />
+            <TextBlock FontSize="19" FontWeight="SemiBold" Text="JC Lib — Visual Pack Editor avancé 1.3.1" />
             <TextBlock x:Name="PackFilePathText" Margin="0,3,0,0" Foreground="{DynamicResource SecondaryTextBrush}" TextWrapping="Wrap" />
         </StackPanel>
 
@@ -219,16 +219,25 @@
                                         <TextBox x:Name="ParameterNameTextBox" Margin="0,3,0,0" Tag="name" TextChanged="OnParameterFieldChanged" />
                                         <TextBlock Margin="0,7,0,0" FontWeight="SemiBold" Text="Type" />
                                         <TextBox x:Name="ParameterTypeTextBox" Margin="0,3,0,0" Tag="type" TextChanged="OnParameterFieldChanged" />
+                                        <TextBlock Margin="0,7,0,0" FontWeight="SemiBold" Text="Description du paramètre" />
+                                        <TextBox x:Name="ParameterDescriptionTextBox" Margin="0,3,0,0" Tag="description" TextChanged="OnParameterFieldChanged" />
                                         <TextBlock Margin="0,7,0,0" FontWeight="SemiBold" Text="Type d'éditeur" />
                                         <TextBox x:Name="ParameterEditorTypeTextBox" Margin="0,3,0,0" Tag="editorType" TextChanged="OnParameterFieldChanged" />
                                         <TextBlock Margin="0,7,0,0" FontWeight="SemiBold" Text="Valeur par défaut" />
                                         <TextBox x:Name="ParameterDefaultValueTextBox" Margin="0,3,0,0" Tag="defaultValue" TextChanged="OnParameterFieldChanged" />
-                                        <TextBlock Margin="0,7,0,0" FontWeight="SemiBold" Text="Presets (une valeur par ligne)" />
+                                        <TextBlock Margin="0,7,0,0" FontWeight="SemiBold" Text="Placeholder" />
+                                        <TextBox x:Name="ParameterPlaceholderTextBox" Margin="0,3,0,0" Tag="placeholder" TextChanged="OnParameterFieldChanged" />
+                                        <CheckBox x:Name="ParameterOptionalCheckBox" Margin="0,7,0,0" Content="Paramètre facultatif" Checked="OnParameterOptionalChanged" Unchecked="OnParameterOptionalChanged" />
+                                        <TextBlock Margin="0,7,0,0" FontWeight="SemiBold" Text="Presets (valeur ou valeur | label | description | détail)" />
                                         <TextBox x:Name="ParameterPresetsTextBox" Margin="0,3,0,0" MinHeight="54" AcceptsReturn="True"
                                                  Tag="presets" TextChanged="OnParameterListFieldChanged" />
-                                        <TextBlock Margin="0,7,0,0" FontWeight="SemiBold" Text="Options (une valeur par ligne)" />
+                                        <TextBlock Margin="0,7,0,0" FontWeight="SemiBold" Text="Options (valeur ou valeur | label | description | détail)" />
                                         <TextBox x:Name="ParameterOptionsTextBox" Margin="0,3,0,0" MinHeight="54" AcceptsReturn="True"
                                                  Tag="options" TextChanged="OnParameterListFieldChanged" />
+                                        <TextBlock Margin="0,7,0,0" FontWeight="SemiBold" Text="pickerConfig JSON (fenêtre structurée, sélection multiple, séparateur)" />
+                                        <TextBox x:Name="ParameterPickerConfigTextBox" Margin="0,3,0,0" MinHeight="110" AcceptsReturn="True" AcceptsTab="True"
+                                                 FontFamily="Consolas" HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto"
+                                                 LostFocus="OnParameterPickerConfigLostFocus" />
                                     </StackPanel>
                                 </Grid>
                             </Expander>

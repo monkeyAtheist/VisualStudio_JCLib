@@ -1,4 +1,4 @@
-# JC Lib — Visual Studio 1.1.0
+# JC Lib — Visual Studio 1.3.1
 
 Portage Visual Studio de JC Lib sous la forme d'une Tool Window WPF ancrable, avec navigateur multi-pack, insertion de snippets, accès rapides, couleurs configurables et Visual Pack Editor WPF avancé.
 
@@ -61,7 +61,7 @@ Les préférences sont stockées localement dans :
 8. Fermer et rouvrir JC Lib pour vérifier la persistance de la recherche, des filtres et des favoris.
 9. Ouvrir un pack externe dans le Visual Pack Editor et vérifier la lisibilité de l'arborescence.
 
-Voir `docs/MANUAL_TEST_CHECKLIST_1.1.0.md` pour les cas détaillés.
+Voir `docs/MANUAL_TEST_CHECKLIST_1.3.1.md` pour les cas détaillés.
 
 
 ## Version 1.2.0 — listes déroulantes et packs externes uniquement
@@ -70,3 +70,25 @@ Voir `docs/MANUAL_TEST_CHECKLIST_1.1.0.md` pour les cas détaillés.
 - option `Inclure le pack embarqué (fallback)` désactivée par défaut ;
 - utilisation normale possible avec les seuls packs exportés depuis l’extension VS Code ;
 - fallback embarqué conservé dans le VSIX pour récupération ou premier démarrage.
+
+
+## Version 1.3.1 — correctif de compilation et compatibilité avec les packs structurés JC Lib 0.7.60
+
+- lecture des paramètres enrichis `description`, `placeholder`, `optional` et `pickerConfig` ;
+- prise en charge des options simples ou documentées (`value`, `label`, `description`, `detail`) ;
+- rendu des templates paramétrés `{{parameter}}` pour les fonctions, méthodes, commandes, snippets, classes, structures et déclarations ;
+- fenêtre WPF dédiée aux choix structurés et aux sélections multiples ;
+- combinaison des choix multiples selon `pickerConfig.valueSeparator` et prise en charge de `emptyValue` ;
+- conservation des navigateurs de fichier et de dossier avec adaptation des guillemets lorsque le template les fournit déjà ;
+- Visual Pack Editor enrichi : description, placeholder, paramètre facultatif, options documentées et édition JSON de `pickerConfig` ;
+- fallback embarqué mis à jour avec `default_pack.json` `2.05.0` issu de JC Lib VS Code `0.7.60`.
+
+## Compilation Visual Studio 2026
+
+Sous Windows avec la charge de travail **Visual Studio extension development** :
+
+```powershell
+powershell -ExecutionPolicy Bypass -File tools\build_vs2026_release.ps1 -Configuration Release
+```
+
+Le VSIX produit doit ensuite être validé avec `docs/MANUAL_TEST_CHECKLIST_1.3.1.md`.

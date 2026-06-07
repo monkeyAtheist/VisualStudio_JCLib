@@ -71,19 +71,100 @@ public sealed class CatalogNode : INotifyPropertyChanged
     private void OnPropertyChanged([CallerMemberName] string? propertyName = null) => PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
 }
 
+public sealed class CatalogChoice
+{
+    public string Value { get; set; } = string.Empty;
+
+    public string Label { get; set; } = string.Empty;
+
+    public string Description { get; set; } = string.Empty;
+
+    public string Detail { get; set; } = string.Empty;
+
+    public string DefaultValue { get; set; } = string.Empty;
+
+    public IReadOnlyList<string> SourceTypes { get; set; } = Array.Empty<string>();
+
+    public string DisplayLabel => string.IsNullOrWhiteSpace(Value) && !string.IsNullOrWhiteSpace(Label)
+        ? Label
+        : string.IsNullOrWhiteSpace(Label) || string.Equals(Label, Value, StringComparison.Ordinal)
+            ? Value
+            : $"{Label} — {Value}";
+
+    public string HelpText => string.Join(" — ", new[] { Description, Detail }
+        .Where(value => !string.IsNullOrWhiteSpace(value)));
+}
+
+public sealed class CatalogPickerGroup
+{
+    public string Label { get; set; } = string.Empty;
+
+    public string Description { get; set; } = string.Empty;
+
+    public IReadOnlyList<CatalogChoice> Items { get; set; } = Array.Empty<CatalogChoice>();
+}
+
+public sealed class CatalogPickerSection
+{
+    public string Label { get; set; } = string.Empty;
+
+    public string Description { get; set; } = string.Empty;
+
+    public IReadOnlyList<CatalogPickerGroup> Groups { get; set; } = Array.Empty<CatalogPickerGroup>();
+}
+
+public sealed class CatalogPickerConfig
+{
+    public string Title { get; set; } = string.Empty;
+
+    public string SelectionLabel { get; set; } = string.Empty;
+
+    public string Subtitle { get; set; } = string.Empty;
+
+    public IReadOnlyList<string> SourceTypes { get; set; } = Array.Empty<string>();
+
+    public IReadOnlyList<CatalogPickerSection> Sections { get; set; } = Array.Empty<CatalogPickerSection>();
+
+    public bool ApplyDefaultIfEmpty { get; set; }
+
+    public bool MultiSelect { get; set; }
+
+    public string ValueSeparator { get; set; } = " | ";
+
+    public string EmptyValue { get; set; } = string.Empty;
+
+    public IReadOnlyList<CatalogChoice> FlattenChoices() => Sections
+        .SelectMany(section => section.Groups)
+        .SelectMany(group => group.Items)
+        .Where(item => !string.IsNullOrWhiteSpace(item.Value) || !string.IsNullOrWhiteSpace(item.Label) || !string.IsNullOrWhiteSpace(item.Description))
+        .GroupBy(item => item.Value, StringComparer.Ordinal)
+        .Select(group => group.First())
+        .ToArray();
+}
+
 public sealed class CatalogParameter
 {
     public string Name { get; set; } = string.Empty;
 
     public string Type { get; set; } = string.Empty;
 
+    public string Description { get; set; } = string.Empty;
+
     public string EditorType { get; set; } = string.Empty;
 
     public string DefaultValue { get; set; } = string.Empty;
 
-    public IReadOnlyList<string> Presets { get; set; } = Array.Empty<string>();
+    public bool HasExplicitDefaultValue { get; set; }
 
-    public IReadOnlyList<string> Options { get; set; } = Array.Empty<string>();
+    public string Placeholder { get; set; } = string.Empty;
+
+    public bool Optional { get; set; }
+
+    public IReadOnlyList<CatalogChoice> Presets { get; set; } = Array.Empty<CatalogChoice>();
+
+    public IReadOnlyList<CatalogChoice> Options { get; set; } = Array.Empty<CatalogChoice>();
+
+    public CatalogPickerConfig? PickerConfig { get; set; }
 }
 
 public sealed class CatalogEntry
@@ -126,11 +207,18 @@ public sealed class CatalogEntry
 
     public int PackPriority => CatalogPackInfo.GetSourcePriority(PackSourceKind);
 
-    public bool IsFunction => string.Equals(SymbolKind, "function", StringComparison.OrdinalIgnoreCase);
+    public bool IsCallable => new[] { "function", "method", "metamethod", "macro", "command" }
+        .Contains((SymbolKind ?? string.Empty).Trim(), StringComparer.OrdinalIgnoreCase);
 
-    public bool HasReturnValue => IsFunction &&
+    // Compatibility alias retained for older UI code and external integrations.
+    public bool IsFunction => IsCallable;
+
+    public bool HasReturnValue => IsCallable &&
         !string.IsNullOrWhiteSpace(ReturnType) &&
-        !string.Equals(ReturnType.Trim(), "void", StringComparison.OrdinalIgnoreCase);
+        !string.Equals(ReturnType.Trim(), "void", StringComparison.OrdinalIgnoreCase) &&
+        !string.Equals(ReturnType.Trim(), "none", StringComparison.OrdinalIgnoreCase) &&
+        !string.Equals(ReturnType.Trim(), "snippet", StringComparison.OrdinalIgnoreCase) &&
+        !string.Equals(ReturnType.Trim(), "keyword", StringComparison.OrdinalIgnoreCase);
 
     public string Path
     {
@@ -173,7 +261,8 @@ public sealed class CatalogEntry
         PackName,
         PackVersion,
         PackSourceLabel,
-        string.Join(" ", Parameters.Select(parameter => $"{parameter.Type} {parameter.Name} {parameter.EditorType}")),
+        string.Join(" ", Parameters.Select(parameter => $"{parameter.Type} {parameter.Name} {parameter.EditorType} {parameter.Description} {parameter.Placeholder} " +
+            string.Join(" ", parameter.Options.Concat(parameter.Presets).Select(choice => $"{choice.Value} {choice.Label} {choice.Description} {choice.Detail}")))),
     }).ToUpperInvariant();
 
     public string SearchDisplay => string.IsNullOrWhiteSpace(Signature)

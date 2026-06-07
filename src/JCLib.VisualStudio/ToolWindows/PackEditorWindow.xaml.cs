@@ -8,6 +8,7 @@ using System.Windows.Controls;
 using System.Windows.Threading;
 using JCLib.VisualStudio.Models;
 using JCLib.VisualStudio.Services;
+using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using Microsoft.Win32;
 
@@ -274,10 +275,14 @@ public partial class PackEditorWindow : Window
         {
             ParameterNameTextBox.Text = Read(parameter.JsonObject, "name");
             ParameterTypeTextBox.Text = Read(parameter.JsonObject, "type");
+            ParameterDescriptionTextBox.Text = Read(parameter.JsonObject, "description");
             ParameterEditorTypeTextBox.Text = Read(parameter.JsonObject, "editorType");
             ParameterDefaultValueTextBox.Text = Read(parameter.JsonObject, "defaultValue");
-            ParameterPresetsTextBox.Text = ReadArray(parameter.JsonObject, "presets");
-            ParameterOptionsTextBox.Text = ReadArray(parameter.JsonObject, "options");
+            ParameterPlaceholderTextBox.Text = Read(parameter.JsonObject, "placeholder");
+            ParameterOptionalCheckBox.IsChecked = parameter.JsonObject["optional"]?.Value<bool?>() ?? false;
+            ParameterPresetsTextBox.Text = ReadChoiceArray(parameter.JsonObject, "presets");
+            ParameterOptionsTextBox.Text = ReadChoiceArray(parameter.JsonObject, "options");
+            ParameterPickerConfigTextBox.Text = ReadObject(parameter.JsonObject, "pickerConfig");
         }
         finally
         {
@@ -294,10 +299,14 @@ public partial class PackEditorWindow : Window
         {
             ParameterNameTextBox.Text = string.Empty;
             ParameterTypeTextBox.Text = string.Empty;
+            ParameterDescriptionTextBox.Text = string.Empty;
             ParameterEditorTypeTextBox.Text = string.Empty;
             ParameterDefaultValueTextBox.Text = string.Empty;
+            ParameterPlaceholderTextBox.Text = string.Empty;
+            ParameterOptionalCheckBox.IsChecked = false;
             ParameterPresetsTextBox.Text = string.Empty;
             ParameterOptionsTextBox.Text = string.Empty;
+            ParameterPickerConfigTextBox.Text = string.Empty;
         }
         finally
         {
@@ -359,8 +368,29 @@ public partial class PackEditorWindow : Window
     {
         if (_loadingFields || _selectedParameter is null) return;
         if (sender is not TextBox textBox || textBox.Tag is not string propertyName) return;
-        _document.SetParameterListProperty(_selectedParameter, propertyName, textBox.Text);
+        _document.SetParameterChoiceListProperty(_selectedParameter, propertyName, textBox.Text);
         RefreshValidation();
+    }
+
+    private void OnParameterOptionalChanged(object sender, RoutedEventArgs e)
+    {
+        if (_loadingFields || _selectedParameter is null) return;
+        _document.SetParameterBooleanProperty(_selectedParameter, "optional", ParameterOptionalCheckBox.IsChecked == true);
+        RefreshValidation();
+    }
+
+    private void OnParameterPickerConfigLostFocus(object sender, RoutedEventArgs e)
+    {
+        if (_loadingFields || _selectedParameter is null) return;
+        try
+        {
+            _document.SetParameterObjectProperty(_selectedParameter, "pickerConfig", ParameterPickerConfigTextBox.Text);
+            RefreshValidation("Configuration de sélection structurée mise à jour.");
+        }
+        catch (Exception ex)
+        {
+            EditorStatusText.Text = $"pickerConfig invalide : {ex.Message}";
+        }
     }
 
     private void OnBatchSelectionCheckBoxClick(object sender, RoutedEventArgs e)
@@ -787,8 +817,30 @@ public partial class PackEditorWindow : Window
 
     private static string Read(JObject value, string propertyName) => value[propertyName]?.Value<string>() ?? string.Empty;
 
-    private static string ReadArray(JObject value, string propertyName)
+    private static string ReadChoiceArray(JObject value, string propertyName)
     {
-        return string.Join(Environment.NewLine, (value[propertyName] as JArray)?.Values<string>() ?? Enumerable.Empty<string>());
+        JArray? array = value[propertyName] as JArray;
+        if (array is null) return string.Empty;
+        return string.Join(Environment.NewLine, array.Select(item =>
+        {
+            if (item.Type == JTokenType.String) return item.Value<string>() ?? string.Empty;
+            if (item is not JObject choice) return item.ToString(Formatting.None);
+            string optionValue = choice["value"]?.Value<string>() ?? choice["constant"]?.Value<string>() ?? string.Empty;
+            string label = choice["label"]?.Value<string>() ?? string.Empty;
+            string description = choice["description"]?.Value<string>() ?? string.Empty;
+            string detail = choice["detail"]?.Value<string>() ?? string.Empty;
+            string[] fields = { optionValue, label, description, detail };
+            int lastPopulatedField = fields.Length - 1;
+            while (lastPopulatedField >= 0 && string.IsNullOrWhiteSpace(fields[lastPopulatedField]))
+            {
+                lastPopulatedField--;
+            }
+            return string.Join(" | ", fields.Take(lastPopulatedField + 1));
+        }));
+    }
+
+    private static string ReadObject(JObject value, string propertyName)
+    {
+        return value[propertyName] is JObject obj ? obj.ToString(Formatting.Indented) : string.Empty;
     }
 }

@@ -4,11 +4,11 @@
                  xmlns:d="http://schemas.microsoft.com/developer/vsx-schema-design/2011">
   <Metadata>
     <Identity Id="JCLib.VisualStudio.6f22038e-dc48-46db-9f71-b3553a5ec9be"
-              Version="1.2.0"
+              Version="1.3.1"
               Language="fr-FR"
               Publisher="Jerry Crozet" />
     <DisplayName>JC Lib - Visual Studio</DisplayName>
-    <Description xml:space="preserve">Navigateur JC Lib Visual Studio : listes déroulantes à contraste configurable, mode packs externes uniquement avec fallback embarqué optionnel, favoris, récents, filtres, insertion rapide et Visual Pack Editor WPF avancé.</Description>
+    <Description xml:space="preserve">Navigateur JC Lib Visual Studio : packs externes et fallback embarqué, paramètres structurés, options documentées, fenêtres de choix multiples, navigateurs fichier ou dossier, favoris, récents, filtres, insertion rapide et Visual Pack Editor WPF avancé.</Description>
     <Icon>Resources\jc-lib-icon.png</Icon>
     <PreviewImage>Resources\jc-lib-icon.png</PreviewImage>
     <Tags>JC Lib, snippets, libraries, catalog browser, tool window, Visual Studio</Tags>

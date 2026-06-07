@@ -280,8 +280,11 @@ public sealed class PackEditorDocument
         {
             ["name"] = name,
             ["type"] = "int",
+            ["description"] = string.Empty,
             ["editorType"] = "text",
             ["defaultValue"] = string.Empty,
+            ["placeholder"] = string.Empty,
+            ["optional"] = false,
             ["presets"] = new JArray(),
             ["options"] = new JArray(),
         };
@@ -311,17 +314,47 @@ public sealed class PackEditorDocument
         IsDirty = true;
     }
 
-    public void SetParameterListProperty(PackEditorParameter parameter, string propertyName, string text)
+    public void SetParameterChoiceListProperty(PackEditorParameter parameter, string propertyName, string text)
     {
         if (parameter is null) throw new ArgumentNullException(nameof(parameter));
         if (string.IsNullOrWhiteSpace(propertyName)) throw new ArgumentException("Le nom de propriété est vide.", nameof(propertyName));
-        string[] values = (text ?? string.Empty)
-            .Split(new[] { '\r', '\n', ',' }, StringSplitOptions.RemoveEmptyEntries)
-            .Select(value => value.Trim())
-            .Where(value => value.Length > 0)
-            .Distinct(StringComparer.Ordinal)
-            .ToArray();
-        parameter.JsonObject[propertyName] = new JArray(values);
+        var values = new JArray();
+        foreach (string rawLine in (text ?? string.Empty).Split(new[] { '\r', '\n' }, StringSplitOptions.RemoveEmptyEntries))
+        {
+            string line = rawLine.Trim();
+            if (line.Length == 0) continue;
+            string[] parts = line.Split(new[] { " | " }, StringSplitOptions.None).Select(value => value.Trim()).ToArray();
+            if (parts.Length == 1)
+            {
+                values.Add(parts[0]);
+                continue;
+            }
+            var choice = new JObject { ["value"] = parts[0] };
+            if (parts.Length > 1 && parts[1].Length > 0) choice["label"] = parts[1];
+            if (parts.Length > 2 && parts[2].Length > 0) choice["description"] = parts[2];
+            if (parts.Length > 3 && parts[3].Length > 0) choice["detail"] = parts[3];
+            values.Add(choice);
+        }
+        parameter.JsonObject[propertyName] = values;
+        parameter.NotifyChanged();
+        IsDirty = true;
+    }
+
+    public void SetParameterBooleanProperty(PackEditorParameter parameter, string propertyName, bool value)
+    {
+        if (parameter is null) throw new ArgumentNullException(nameof(parameter));
+        if (string.IsNullOrWhiteSpace(propertyName)) throw new ArgumentException("Le nom de propriété est vide.", nameof(propertyName));
+        parameter.JsonObject[propertyName] = value;
+        parameter.NotifyChanged();
+        IsDirty = true;
+    }
+
+    public void SetParameterObjectProperty(PackEditorParameter parameter, string propertyName, string json)
+    {
+        if (parameter is null) throw new ArgumentNullException(nameof(parameter));
+        if (string.IsNullOrWhiteSpace(propertyName)) throw new ArgumentException("Le nom de propriété est vide.", nameof(propertyName));
+        if (string.IsNullOrWhiteSpace(json)) parameter.JsonObject.Remove(propertyName);
+        else parameter.JsonObject[propertyName] = JObject.Parse(json);
         parameter.NotifyChanged();
         IsDirty = true;
     }

@@ -477,13 +477,106 @@ public static class CatalogLoader
 
     private static PackDto DeserializePack(string json)
     {
-        var settings = new DataContractJsonSerializerSettings { MaxItemsInObjectGraph = int.MaxValue };
-        var serializer = new DataContractJsonSerializer(typeof(PackDto), settings);
-        using (var stream = new MemoryStream(Encoding.UTF8.GetBytes(json)))
+        try
         {
-            return serializer.ReadObject(stream) as PackDto
+            return JsonConvert.DeserializeObject<PackDto>(json)
                 ?? throw new InvalidDataException("Le fichier JSON ne contient pas un objet pack valide.");
         }
+        catch (JsonException ex)
+        {
+            throw new InvalidDataException("Le fichier JSON ne respecte pas le schéma JC Lib attendu.", ex);
+        }
+    }
+
+    private static IReadOnlyList<CatalogChoice> ParseChoices(JToken? token)
+    {
+        if (token is null || token.Type == JTokenType.Null) return Array.Empty<CatalogChoice>();
+        IEnumerable<JToken> values = token is JArray array ? array : new[] { token };
+        return values
+            .Select(ParseChoice)
+            .Where(choice => choice is not null && (!string.IsNullOrWhiteSpace(choice.Value) || !string.IsNullOrWhiteSpace(choice.Label) || !string.IsNullOrWhiteSpace(choice.Description)))
+            .Cast<CatalogChoice>()
+            .GroupBy(choice => choice.Value.Trim(), StringComparer.Ordinal)
+            .Select(group => group.First())
+            .ToArray();
+    }
+
+    private static CatalogChoice? ParseChoice(JToken token)
+    {
+        if (token.Type == JTokenType.String || token.Type == JTokenType.Integer || token.Type == JTokenType.Float || token.Type == JTokenType.Boolean)
+        {
+            string value = token.ToString();
+            return new CatalogChoice { Value = value, Label = value };
+        }
+
+        if (token is not JObject item) return null;
+        bool hasExplicitValue = item.TryGetValue("value", out JToken? valueToken);
+        string valueText = hasExplicitValue
+            ? valueToken?.Value<string>() ?? string.Empty
+            : FirstNonEmpty(
+                item["constant"]?.Value<string>() ?? string.Empty,
+                item["label"]?.Value<string>() ?? string.Empty);
+        string labelText = item["label"]?.Value<string>() ?? string.Empty;
+        string descriptionText = item["description"]?.Value<string>() ?? string.Empty;
+        if (!hasExplicitValue && string.IsNullOrWhiteSpace(valueText)) return null;
+        if (hasExplicitValue && string.IsNullOrWhiteSpace(valueText) && string.IsNullOrWhiteSpace(labelText) && string.IsNullOrWhiteSpace(descriptionText)) return null;
+        return new CatalogChoice
+        {
+            Value = valueText.Trim(),
+            Label = Normalize(labelText, valueText),
+            Description = Normalize(item["description"]?.Value<string>(), string.Empty, trim: false),
+            Detail = Normalize(item["detail"]?.Value<string>(), string.Empty, trim: false),
+            DefaultValue = Normalize(item["defaultValue"]?.Value<string>(), string.Empty, trim: false),
+            SourceTypes = ParseStringArray(item["sourceTypes"]),
+        };
+    }
+
+    private static CatalogPickerConfig? ParsePickerConfig(JToken? token)
+    {
+        if (token is not JObject picker) return null;
+        CatalogPickerSection[] sections = OrEmpty(picker["sections"] as JArray)
+            .OfType<JObject>()
+            .Select(section => new CatalogPickerSection
+            {
+                Label = Normalize(section["label"]?.Value<string>(), "Choix"),
+                Description = Normalize(section["description"]?.Value<string>(), string.Empty, trim: false),
+                Groups = OrEmpty(section["groups"] as JArray)
+                    .OfType<JObject>()
+                    .Select(group => new CatalogPickerGroup
+                    {
+                        Label = Normalize(group["label"]?.Value<string>(), "Valeurs"),
+                        Description = Normalize(group["description"]?.Value<string>(), string.Empty, trim: false),
+                        Items = ParseChoices(group["items"]),
+                    })
+                    .Where(group => group.Items.Count > 0)
+                    .ToArray(),
+            })
+            .Where(section => section.Groups.Count > 0)
+            .ToArray();
+
+        return new CatalogPickerConfig
+        {
+            Title = Normalize(picker["title"]?.Value<string>(), "Choisir une valeur"),
+            SelectionLabel = Normalize(picker["selectionLabel"]?.Value<string>(), "Valeur sélectionnée"),
+            Subtitle = Normalize(picker["subtitle"]?.Value<string>(), string.Empty, trim: false),
+            SourceTypes = ParseStringArray(picker["sourceTypes"] ?? picker["controlTypes"]),
+            Sections = sections,
+            ApplyDefaultIfEmpty = picker["applyDefaultIfEmpty"]?.Value<bool?>() ?? true,
+            MultiSelect = picker["multiSelect"]?.Value<bool?>() ?? false,
+            ValueSeparator = Normalize(picker["valueSeparator"]?.Value<string>(), " | ", trim: false),
+            EmptyValue = Normalize(picker["emptyValue"]?.Value<string>(), string.Empty, trim: false),
+        };
+    }
+
+    private static IReadOnlyList<string> ParseStringArray(JToken? token)
+    {
+        if (token is not JArray array) return Array.Empty<string>();
+        return array
+            .Values<string>()
+            .Where(value => !string.IsNullOrWhiteSpace(value))
+            .Select(value => value.Trim())
+            .Distinct(StringComparer.Ordinal)
+            .ToArray();
     }
 
     private static void AddGroups(
@@ -551,18 +644,15 @@ public static class CatalogLoader
                     {
                         Name = Normalize(parameter.Name, "param"),
                         Type = Normalize(parameter.Type, "int"),
+                        Description = Normalize(parameter.Description, string.Empty, trim: false),
                         EditorType = Normalize(parameter.EditorType, string.Empty),
                         DefaultValue = Normalize(parameter.DefaultValue, string.Empty, trim: false),
-                        Presets = OrEmpty(parameter.Presets)
-                            .Where(value => !string.IsNullOrWhiteSpace(value))
-                            .Select(value => value.Trim())
-                            .Distinct(StringComparer.Ordinal)
-                            .ToArray(),
-                        Options = OrEmpty(parameter.Options)
-                            .Where(value => !string.IsNullOrWhiteSpace(value))
-                            .Select(value => value.Trim())
-                            .Distinct(StringComparer.Ordinal)
-                            .ToArray(),
+                        HasExplicitDefaultValue = parameter.DefaultValue is not null,
+                        Placeholder = Normalize(parameter.Placeholder, string.Empty, trim: false),
+                        Optional = parameter.Optional,
+                        Presets = ParseChoices(parameter.Presets),
+                        Options = ParseChoices(parameter.Options),
+                        PickerConfig = ParsePickerConfig(parameter.PickerConfig),
                     })
                     .ToArray(),
                 PackId = packId,
@@ -678,9 +768,13 @@ public static class CatalogLoader
     {
         [DataMember(Name = "name")] public string? Name { get; set; }
         [DataMember(Name = "type")] public string? Type { get; set; }
+        [DataMember(Name = "description")] public string? Description { get; set; }
         [DataMember(Name = "editorType")] public string? EditorType { get; set; }
         [DataMember(Name = "defaultValue")] public string? DefaultValue { get; set; }
-        [DataMember(Name = "presets")] public List<string>? Presets { get; set; }
-        [DataMember(Name = "options")] public List<string>? Options { get; set; }
+        [DataMember(Name = "placeholder")] public string? Placeholder { get; set; }
+        [DataMember(Name = "optional")] public bool Optional { get; set; }
+        [DataMember(Name = "presets")] public JToken? Presets { get; set; }
+        [DataMember(Name = "options")] public JToken? Options { get; set; }
+        [DataMember(Name = "pickerConfig")] public JToken? PickerConfig { get; set; }
     }
 }
