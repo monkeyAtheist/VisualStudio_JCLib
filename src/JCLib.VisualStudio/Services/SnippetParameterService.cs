@@ -47,6 +47,7 @@ internal sealed class SnippetParameterValue
 internal static class SnippetParameterService
 {
     private static readonly Regex ParameterTemplateRegex = new Regex(@"\{\{([A-Za-z_][A-Za-z0-9_]*)\}\}", RegexOptions.Compiled);
+    private static readonly Regex EmptyQuotedHtmlAttributeRegex = new Regex(@"\s+[A-Za-z_:][-A-Za-z0-9_:.]*=(?:""\s*""|'\s*')", RegexOptions.Compiled);
 
     public static IReadOnlyList<SnippetParameterValue> CreateEditorState(CatalogEntry entry)
     {
@@ -339,12 +340,36 @@ internal static class SnippetParameterService
             CatalogParameter parameter = entry.Parameters[index];
             string replacement = index < values.Count && !IsEnabled(values, index)
                 ? string.Empty
-                : index < values.Count && !string.IsNullOrWhiteSpace(values[index].Value)
-                    ? values[index].Value.Trim()
-                    : (index < values.Count ? values[index].EffectiveDefaultValue : (parameter.HasExplicitDefaultValue ? parameter.DefaultValue : InferDefaultValue(parameter.Name, parameter.Type, InferEditorType(parameter))));
+                : index < values.Count
+                    ? (values[index].Value ?? string.Empty).Trim()
+                    : (parameter.HasExplicitDefaultValue ? parameter.DefaultValue : InferDefaultValue(parameter.Name, parameter.Type, InferEditorType(parameter)));
+            if (IsHtmlMarkupEntry(entry) && string.Equals(parameter.Name, "attributes", StringComparison.Ordinal) && replacement.Length > 0 && !char.IsWhiteSpace(replacement[0]))
+            {
+                replacement = " " + replacement;
+            }
             output = Regex.Replace(output, $@"\{{\{{{Regex.Escape(parameter.Name)}\}}\}}", _ => replacement);
         }
-        return output;
+        return NormalizeHtmlMarkupText(output, entry);
+    }
+
+    private static bool IsHtmlMarkupEntry(CatalogEntry entry)
+    {
+        string library = (entry.Library ?? string.Empty).Trim();
+        string category = (entry.Category ?? string.Empty).Trim();
+        string returnType = (entry.ReturnType ?? string.Empty).Trim();
+        return string.Equals(library, "HTML", StringComparison.OrdinalIgnoreCase)
+            || library.IndexOf("Razor / CSHTML", StringComparison.OrdinalIgnoreCase) >= 0
+            || category.IndexOf("HTML Structure", StringComparison.OrdinalIgnoreCase) >= 0
+            || category.IndexOf("CSHTML", StringComparison.OrdinalIgnoreCase) >= 0
+            || string.Equals(returnType, "HTML markup", StringComparison.OrdinalIgnoreCase)
+            || string.Equals(returnType, "CSHTML markup", StringComparison.OrdinalIgnoreCase);
+    }
+
+    private static string NormalizeHtmlMarkupText(string text, CatalogEntry entry)
+    {
+        return IsHtmlMarkupEntry(entry)
+            ? EmptyQuotedHtmlAttributeRegex.Replace(text ?? string.Empty, string.Empty)
+            : text ?? string.Empty;
     }
 
     private static bool IsSimpleCallableTemplateText(string text)

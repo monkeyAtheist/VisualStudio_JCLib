@@ -69,6 +69,19 @@
       <IncludeInVSIX>true</IncludeInVSIX>
     </Content>
 
+    <!-- Standalone Web catalog exported by the VS Code extension.
+         Distributed for direct import and compatibility checks; Visual Studio does not generate integrated packs. -->
+    <Content Include="Assets\Packs\web_language_pack.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <IncludeInVSIX>true</IncludeInVSIX>
+    </Content>
+
+    <!-- Standalone C# / ASP.NET Core Razor CSHTML catalog exported by the VS Code extension. -->
+    <Content Include="Assets\Packs\csharp_language_pack.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <IncludeInVSIX>true</IncludeInVSIX>
+    </Content>
+
     <!-- Embedded fallback: the first read-only browser does not depend on the
          final installation layout of the VSIX content files. -->
     <EmbeddedResource Include="Assets\Packs\default_pack.json">

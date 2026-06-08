@@ -747,7 +747,7 @@ public partial class JCLibToolWindowControl : UserControl
         string text = (snippet ?? string.Empty).Trim();
         if (text.Length == 0) return false;
         return Regex.IsMatch(text,
-            @"(^|[;&|]\s*|\n\s*)(rm\s+-|rmdir\b|del\s+/|erase\b|format\b|diskpart\b|shutdown\b|reboot\b|poweroff\b|taskkill\b|stop-process\b|remove-item\b|docker\s+system\s+prune\b|docker\s+(container|image|volume)\s+rm\b|git\s+reset\s+--hard\b|git\s+clean\s+-|git\s+stash\s+clear\b|git\s+branch\s+-d\b|git\s+worktree\s+remove\b|sc\s+delete\b|reg\s+delete\b|apt\s+remove\b|systemctl\s+(stop|disable|restart)\b)",
+            @"(^|[;&|]\s*|\n\s*)(rm\s+-|rmdir\b|del\s+/|erase\b|format\b|diskpart\b|shutdown\b|reboot\b|poweroff\b|taskkill\b|stop-process\b|remove-item\b|docker\s+system\s+prune\b|docker\s+(container|image|volume)\s+rm\b|git\s+reset\s+--hard\b|git\s+clean\s+-|git\s+stash\s+clear\b|git\s+branch\s+-d\b|git\s+worktree\s+remove\b|sc\s+delete\b|reg\s+delete\b|apt\s+remove\b|systemctl\s+(stop|disable|restart)\b|setx\b|ipconfig\s+/flushdns\b|clear-dnsclientcache\b|ssh-copy-id\b|authorized_keys\b|setenvironmentvariable\b|add-content\b[^\n]*hosts\b|set-content\b[^\n]*hosts\b|tee\s+-a\s+/etc/hosts\b|sed\s+-i[^\n]*/etc/hosts\b)",
             RegexOptions.IgnoreCase | RegexOptions.CultureInvariant);
     }
 

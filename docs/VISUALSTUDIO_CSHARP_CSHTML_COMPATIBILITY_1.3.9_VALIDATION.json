@@ -1,0 +1,19 @@
+{
+  "status": "ok",
+  "version": "1.3.9",
+  "distributedAssets": [
+    "build_pack.json",
+    "csharp_language_pack.json",
+    "cvi_pack.json",
+    "default_pack.json",
+    "system_scripting_pack.json",
+    "web_language_pack.json"
+  ],
+  "csharpPackVersion": "1.3.0",
+  "webPackVersion": "1.6.0",
+  "cshtmlCards": 205,
+  "cshtmlAttributeFields": 156,
+  "emptyFooterPreview": "<footer>Footer content</footer>",
+  "errors": [],
+  "compileStatus": "not-run: Linux environment does not provide Visual Studio 2026, MSBuild or the Visual Studio SDK."
+}

@@ -1,0 +1,11 @@
+{
+  "visualStudioSourceVersion": "1.3.8",
+  "systemScriptingPackVersion": "1.9.0",
+  "defaultPackVersion": "2.18.0",
+  "compiledVisualStudioVsixProduced": false,
+  "reason": "The active Linux container does not provide Visual Studio 2026, MSBuild or the Visual Studio SDK. Build the provided source archive on Windows with tools/build_vs2026_release.ps1.",
+  "sourceCompatibilityUpdated": true,
+  "consoleExecutionGuardUpdated": true,
+  "integratedPackGenerationAdded": false,
+  "integratedPackGenerationScope": "VS Code only"
+}

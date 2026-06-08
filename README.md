@@ -1,3 +1,15 @@
+## Version 1.3.9 — compatibilité Web HTML et ASP.NET Core Razor / CSHTML
+
+- Synchronisation des catalogues autonomes Web 1.6.0 et C# / ASP.NET Core Razor CSHTML 1.3.0.
+- Ajout des catalogues `web_language_pack.json` et `csharp_language_pack.json` aux ressources distribuées pour import explicite.
+- Portage de la suppression des attributs HTML / CSHTML cités laissés vides (`id=""`, `class=""`, etc.).
+- Portage de l'espacement automatique du fragment libre `attributes`.
+- Conservation du rôle Visual Studio : import, lecture et insertion ; génération des packs intégrés réservée à VS Code.
+
+## Version 1.3.8 — environnement, alias réseau et alias OpenSSH
+
+Cette mise à jour synchronise le fallback `Scripting / System` 1.9.0 avec les commandes de chemins et variables d’environnement, la gestion des alias locaux `hosts`, les alias OpenSSH associés à une clé privée locale et les recettes d’enrôlement de clé publique. Le bouton `Exécuter dans une console` conserve ses confirmations avant les modifications persistantes. La génération des packs intégrés reste réservée à VS Code.
+
 ## Version 1.3.7 — exécution console et compatibilité Scripting / System 1.8.0
 
 - Ajout du bouton `Exécuter dans une console` pour les cartes `command` et les recettes `Scripting / System`.

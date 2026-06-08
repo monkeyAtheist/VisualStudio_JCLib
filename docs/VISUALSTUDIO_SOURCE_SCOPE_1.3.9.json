@@ -1,0 +1,20 @@
+{
+  "version": "1.3.9",
+  "status": "source-port-only",
+  "compiledVsixProduced": false,
+  "reason": "The active Linux environment does not provide Visual Studio 2026, MSBuild or the Visual Studio SDK.",
+  "integratedPackGeneration": "VS Code only",
+  "distributedAssets": [
+    "default_pack.json",
+    "build_pack.json",
+    "cvi_pack.json",
+    "system_scripting_pack.json",
+    "web_language_pack.json",
+    "csharp_language_pack.json"
+  ],
+  "portedRuntimeBehaviors": [
+    "HTML/CSHTML empty quoted attribute omission",
+    "free-form attributes fragment spacing",
+    "existing pickerConfig multi-select support"
+  ]
+}

@@ -2,7 +2,7 @@
   "id": "scripting-system-pack",
   "name": "Scripting / System Pack",
   "language": "other",
-  "version": "1.8.0",
+  "version": "1.9.0",
   "readOnly": false,
   "environments": [
     {
@@ -5493,6 +5493,692 @@
                     }
                   ],
                   "groups": []
+                },
+                {
+                  "name": "Environment variables, paths & local aliases",
+                  "functions": [
+                    {
+                      "name": "Get-ChildItem Env",
+                      "returnType": "command exit status",
+                      "signature": "Get-ChildItem Env:",
+                      "insertText": "Get-ChildItem Env: {{flags}}",
+                      "library": "PowerShell 7",
+                      "category": "Files, Data & Configuration",
+                      "description": "List environment variables visible in the current PowerShell process.",
+                      "longDescription": "List environment variables visible in the current PowerShell process.\n\nSource: https://learn.microsoft.com/en-us/powershell/module/microsoft.powershell.core/about/about_environment_variables\nOfficial reference documentation. Review platform requirements, privileges and generated values before execution.",
+                      "parameters": [
+                        {
+                          "name": "flags",
+                          "type": "optional flags",
+                          "description": "Optional output modifiers.",
+                          "editorType": "enum",
+                          "defaultValue": "",
+                          "options": [
+                            {
+                              "value": "| Sort-Object Name",
+                              "label": "Sort by name",
+                              "description": "Sort environment entries alphabetically."
+                            },
+                            {
+                              "value": "| Format-Table -AutoSize",
+                              "label": "Table view",
+                              "description": "Render a compact table."
+                            }
+                          ],
+                          "pickerConfig": {
+                            "title": "Select flags",
+                            "selectionLabel": "Combined options",
+                            "subtitle": "Optional output modifiers.",
+                            "multiSelect": true,
+                            "valueSeparator": " ",
+                            "emptyValue": "",
+                            "applyDefaultIfEmpty": false,
+                            "sections": [
+                              {
+                                "label": "Documented command options",
+                                "description": "Choose documented values for the generated command.",
+                                "groups": [
+                                  {
+                                    "label": "Available values",
+                                    "description": "Select the value or values matching the intended behavior.",
+                                    "items": [
+                                      {
+                                        "value": "| Sort-Object Name",
+                                        "label": "Sort by name",
+                                        "description": "Sort environment entries alphabetically."
+                                      },
+                                      {
+                                        "value": "| Format-Table -AutoSize",
+                                        "label": "Table view",
+                                        "description": "Render a compact table."
+                                      }
+                                    ]
+                                  }
+                                ]
+                              }
+                            ]
+                          },
+                          "optional": true
+                        }
+                      ],
+                      "symbolKind": "command",
+                      "declaration": "Get-ChildItem Env:",
+                      "environment": "Scripting / System",
+                      "header": "PowerShell 7"
+                    },
+                    {
+                      "name": "Get-Item environment variable",
+                      "returnType": "command exit status",
+                      "signature": "Get-Item Env:NAME",
+                      "insertText": "Get-Item \"Env:{{name}}\"",
+                      "library": "PowerShell 7",
+                      "category": "Files, Data & Configuration",
+                      "description": "Read one environment variable from the current PowerShell process.",
+                      "longDescription": "Read one environment variable from the current PowerShell process.\n\nSource: https://learn.microsoft.com/en-us/powershell/module/microsoft.powershell.core/about/about_environment_variables\nOfficial reference documentation. Review platform requirements, privileges and generated values before execution.",
+                      "parameters": [
+                        {
+                          "name": "name",
+                          "type": "variable name",
+                          "description": "Environment variable name.",
+                          "editorType": "text",
+                          "defaultValue": "PATH"
+                        }
+                      ],
+                      "symbolKind": "command",
+                      "declaration": "Get-Item Env:NAME",
+                      "environment": "Scripting / System",
+                      "header": "PowerShell 7"
+                    },
+                    {
+                      "name": "GetEnvironmentVariable scoped",
+                      "returnType": "command exit status",
+                      "signature": "[Environment]::GetEnvironmentVariable(NAME, SCOPE)",
+                      "insertText": "[Environment]::GetEnvironmentVariable(\"{{name}}\", \"{{scope}}\")",
+                      "library": "PowerShell 7",
+                      "category": "Files, Data & Configuration",
+                      "description": "Read one environment variable from the process, user or machine scope.",
+                      "longDescription": "Read one environment variable from the process, user or machine scope.\n\nSource: https://learn.microsoft.com/en-us/dotnet/api/system.environment.getenvironmentvariable\nOfficial reference documentation. Review platform requirements, privileges and generated values before execution.",
+                      "parameters": [
+                        {
+                          "name": "name",
+                          "type": "variable name",
+                          "description": "Environment variable name.",
+                          "editorType": "text",
+                          "defaultValue": "PATH"
+                        },
+                        {
+                          "name": "scope",
+                          "type": "environment scope",
+                          "description": "Environment-variable scope.",
+                          "editorType": "enum",
+                          "defaultValue": "User",
+                          "options": [
+                            {
+                              "value": "Process",
+                              "label": "Process",
+                              "description": "Current process and child processes only."
+                            },
+                            {
+                              "value": "User",
+                              "label": "User",
+                              "description": "Persistent per-user environment scope on Windows."
+                            },
+                            {
+                              "value": "Machine",
+                              "label": "Machine",
+                              "description": "Persistent machine-wide scope on Windows; elevation is generally required."
+                            }
+                          ],
+                          "pickerConfig": {
+                            "title": "Select scope",
+                            "selectionLabel": "Selected value",
+                            "subtitle": "Environment-variable scope.",
+                            "multiSelect": false,
+                            "valueSeparator": " ",
+                            "emptyValue": "",
+                            "applyDefaultIfEmpty": false,
+                            "sections": [
+                              {
+                                "label": "Documented command options",
+                                "description": "Choose documented values for the generated command.",
+                                "groups": [
+                                  {
+                                    "label": "Available values",
+                                    "description": "Select the value or values matching the intended behavior.",
+                                    "items": [
+                                      {
+                                        "value": "Process",
+                                        "label": "Process",
+                                        "description": "Current process and child processes only."
+                                      },
+                                      {
+                                        "value": "User",
+                                        "label": "User",
+                                        "description": "Persistent per-user environment scope on Windows."
+                                      },
+                                      {
+                                        "value": "Machine",
+                                        "label": "Machine",
+                                        "description": "Persistent machine-wide scope on Windows; elevation is generally required."
+                                      }
+                                    ]
+                                  }
+                                ]
+                              }
+                            ]
+                          }
+                        }
+                      ],
+                      "symbolKind": "command",
+                      "declaration": "[Environment]::GetEnvironmentVariable(NAME, SCOPE)",
+                      "environment": "Scripting / System",
+                      "header": "PowerShell 7"
+                    },
+                    {
+                      "name": "GetEnvironmentVariables scoped",
+                      "returnType": "command exit status",
+                      "signature": "[Environment]::GetEnvironmentVariables(SCOPE)",
+                      "insertText": "[Environment]::GetEnvironmentVariables(\"{{scope}}\")",
+                      "library": "PowerShell 7",
+                      "category": "Files, Data & Configuration",
+                      "description": "List persistent environment variables from the selected process, user or machine scope.",
+                      "longDescription": "List persistent environment variables from the selected process, user or machine scope.\n\nSource: https://learn.microsoft.com/en-us/dotnet/api/system.environment.getenvironmentvariables\nOfficial reference documentation. Review platform requirements, privileges and generated values before execution.",
+                      "parameters": [
+                        {
+                          "name": "scope",
+                          "type": "environment scope",
+                          "description": "Environment-variable scope.",
+                          "editorType": "enum",
+                          "defaultValue": "User",
+                          "options": [
+                            {
+                              "value": "Process",
+                              "label": "Process",
+                              "description": "Current process and child processes only."
+                            },
+                            {
+                              "value": "User",
+                              "label": "User",
+                              "description": "Persistent per-user environment scope on Windows."
+                            },
+                            {
+                              "value": "Machine",
+                              "label": "Machine",
+                              "description": "Persistent machine-wide scope on Windows; elevation is generally required."
+                            }
+                          ],
+                          "pickerConfig": {
+                            "title": "Select scope",
+                            "selectionLabel": "Selected value",
+                            "subtitle": "Environment-variable scope.",
+                            "multiSelect": false,
+                            "valueSeparator": " ",
+                            "emptyValue": "",
+                            "applyDefaultIfEmpty": false,
+                            "sections": [
+                              {
+                                "label": "Documented command options",
+                                "description": "Choose documented values for the generated command.",
+                                "groups": [
+                                  {
+                                    "label": "Available values",
+                                    "description": "Select the value or values matching the intended behavior.",
+                                    "items": [
+                                      {
+                                        "value": "Process",
+                                        "label": "Process",
+                                        "description": "Current process and child processes only."
+                                      },
+                                      {
+                                        "value": "User",
+                                        "label": "User",
+                                        "description": "Persistent per-user environment scope on Windows."
+                                      },
+                                      {
+                                        "value": "Machine",
+                                        "label": "Machine",
+                                        "description": "Persistent machine-wide scope on Windows; elevation is generally required."
+                                      }
+                                    ]
+                                  }
+                                ]
+                              }
+                            ]
+                          }
+                        }
+                      ],
+                      "symbolKind": "command",
+                      "declaration": "[Environment]::GetEnvironmentVariables(SCOPE)",
+                      "environment": "Scripting / System",
+                      "header": "PowerShell 7"
+                    },
+                    {
+                      "name": "SetEnvironmentVariable scoped",
+                      "returnType": "command exit status",
+                      "signature": "[Environment]::SetEnvironmentVariable(NAME, VALUE, SCOPE)",
+                      "insertText": "[Environment]::SetEnvironmentVariable(\"{{name}}\", \"{{value}}\", \"{{scope}}\")",
+                      "library": "PowerShell 7",
+                      "category": "Files, Data & Configuration",
+                      "description": "Create or modify an environment variable in the selected scope. User and Machine values persist beyond the current shell on Windows.",
+                      "longDescription": "Create or modify an environment variable in the selected scope. User and Machine values persist beyond the current shell on Windows.\n\nSource: https://learn.microsoft.com/en-us/dotnet/api/system.environment.setenvironmentvariable\nOfficial reference documentation. Review platform requirements, privileges and generated values before execution.",
+                      "parameters": [
+                        {
+                          "name": "name",
+                          "type": "variable name",
+                          "description": "Environment variable name.",
+                          "editorType": "text",
+                          "defaultValue": "APP_MODE"
+                        },
+                        {
+                          "name": "value",
+                          "type": "variable value",
+                          "description": "New environment-variable value.",
+                          "editorType": "text",
+                          "defaultValue": "production"
+                        },
+                        {
+                          "name": "scope",
+                          "type": "environment scope",
+                          "description": "Target scope. Machine generally requires elevation.",
+                          "editorType": "enum",
+                          "defaultValue": "User",
+                          "options": [
+                            {
+                              "value": "Process",
+                              "label": "Process",
+                              "description": "Current process and child processes only."
+                            },
+                            {
+                              "value": "User",
+                              "label": "User",
+                              "description": "Persistent per-user environment scope on Windows."
+                            },
+                            {
+                              "value": "Machine",
+                              "label": "Machine",
+                              "description": "Persistent machine-wide scope on Windows; elevation is generally required."
+                            }
+                          ],
+                          "pickerConfig": {
+                            "title": "Select scope",
+                            "selectionLabel": "Selected value",
+                            "subtitle": "Target scope. Machine generally requires elevation.",
+                            "multiSelect": false,
+                            "valueSeparator": " ",
+                            "emptyValue": "",
+                            "applyDefaultIfEmpty": false,
+                            "sections": [
+                              {
+                                "label": "Documented command options",
+                                "description": "Choose documented values for the generated command.",
+                                "groups": [
+                                  {
+                                    "label": "Available values",
+                                    "description": "Select the value or values matching the intended behavior.",
+                                    "items": [
+                                      {
+                                        "value": "Process",
+                                        "label": "Process",
+                                        "description": "Current process and child processes only."
+                                      },
+                                      {
+                                        "value": "User",
+                                        "label": "User",
+                                        "description": "Persistent per-user environment scope on Windows."
+                                      },
+                                      {
+                                        "value": "Machine",
+                                        "label": "Machine",
+                                        "description": "Persistent machine-wide scope on Windows; elevation is generally required."
+                                      }
+                                    ]
+                                  }
+                                ]
+                              }
+                            ]
+                          }
+                        }
+                      ],
+                      "symbolKind": "command",
+                      "declaration": "[Environment]::SetEnvironmentVariable(NAME, VALUE, SCOPE)",
+                      "environment": "Scripting / System",
+                      "header": "PowerShell 7"
+                    },
+                    {
+                      "name": "RemoveEnvironmentVariable scoped",
+                      "returnType": "command exit status",
+                      "signature": "[Environment]::SetEnvironmentVariable(NAME, $null, SCOPE)",
+                      "insertText": "[Environment]::SetEnvironmentVariable(\"{{name}}\", $null, \"{{scope}}\")",
+                      "library": "PowerShell 7",
+                      "category": "Files, Data & Configuration",
+                      "description": "Remove an environment variable from the selected scope.",
+                      "longDescription": "Remove an environment variable from the selected scope.\n\nSource: https://learn.microsoft.com/en-us/dotnet/api/system.environment.setenvironmentvariable\nOfficial reference documentation. Review platform requirements, privileges and generated values before execution.",
+                      "parameters": [
+                        {
+                          "name": "name",
+                          "type": "variable name",
+                          "description": "Environment variable removed from the selected scope.",
+                          "editorType": "text",
+                          "defaultValue": "APP_MODE"
+                        },
+                        {
+                          "name": "scope",
+                          "type": "environment scope",
+                          "description": "Target scope. Machine generally requires elevation.",
+                          "editorType": "enum",
+                          "defaultValue": "User",
+                          "options": [
+                            {
+                              "value": "Process",
+                              "label": "Process",
+                              "description": "Current process and child processes only."
+                            },
+                            {
+                              "value": "User",
+                              "label": "User",
+                              "description": "Persistent per-user environment scope on Windows."
+                            },
+                            {
+                              "value": "Machine",
+                              "label": "Machine",
+                              "description": "Persistent machine-wide scope on Windows; elevation is generally required."
+                            }
+                          ],
+                          "pickerConfig": {
+                            "title": "Select scope",
+                            "selectionLabel": "Selected value",
+                            "subtitle": "Target scope. Machine generally requires elevation.",
+                            "multiSelect": false,
+                            "valueSeparator": " ",
+                            "emptyValue": "",
+                            "applyDefaultIfEmpty": false,
+                            "sections": [
+                              {
+                                "label": "Documented command options",
+                                "description": "Choose documented values for the generated command.",
+                                "groups": [
+                                  {
+                                    "label": "Available values",
+                                    "description": "Select the value or values matching the intended behavior.",
+                                    "items": [
+                                      {
+                                        "value": "Process",
+                                        "label": "Process",
+                                        "description": "Current process and child processes only."
+                                      },
+                                      {
+                                        "value": "User",
+                                        "label": "User",
+                                        "description": "Persistent per-user environment scope on Windows."
+                                      },
+                                      {
+                                        "value": "Machine",
+                                        "label": "Machine",
+                                        "description": "Persistent machine-wide scope on Windows; elevation is generally required."
+                                      }
+                                    ]
+                                  }
+                                ]
+                              }
+                            ]
+                          }
+                        }
+                      ],
+                      "symbolKind": "command",
+                      "declaration": "[Environment]::SetEnvironmentVariable(NAME, $null, SCOPE)",
+                      "environment": "Scripting / System",
+                      "header": "PowerShell 7"
+                    },
+                    {
+                      "name": "GetFolderPath special folder",
+                      "returnType": "command exit status",
+                      "signature": "[Environment]::GetFolderPath(FOLDER)",
+                      "insertText": "[Environment]::GetFolderPath(\"{{folder}}\")",
+                      "library": "PowerShell 7",
+                      "category": "Files, Data & Configuration",
+                      "description": "Resolve a well-known Windows system or user directory through .NET.",
+                      "longDescription": "Resolve a well-known Windows system or user directory through .NET.\n\nSource: https://learn.microsoft.com/en-us/dotnet/api/system.environment.getfolderpath\nOfficial reference documentation. Review platform requirements, privileges and generated values before execution.",
+                      "parameters": [
+                        {
+                          "name": "folder",
+                          "type": "special folder",
+                          "description": "Well-known directory resolved by .NET.",
+                          "editorType": "enum",
+                          "defaultValue": "UserProfile",
+                          "options": [
+                            {
+                              "value": "UserProfile",
+                              "label": "User profile",
+                              "description": "Current user profile directory."
+                            },
+                            {
+                              "value": "Desktop",
+                              "label": "Desktop",
+                              "description": "Current user desktop directory."
+                            },
+                            {
+                              "value": "MyDocuments",
+                              "label": "Documents",
+                              "description": "Current user documents directory."
+                            },
+                            {
+                              "value": "ApplicationData",
+                              "label": "Roaming AppData",
+                              "description": "Current user roaming application-data directory."
+                            },
+                            {
+                              "value": "LocalApplicationData",
+                              "label": "Local AppData",
+                              "description": "Current user local application-data directory."
+                            },
+                            {
+                              "value": "CommonApplicationData",
+                              "label": "ProgramData",
+                              "description": "Machine-wide application-data directory."
+                            },
+                            {
+                              "value": "ProgramFiles",
+                              "label": "Program Files",
+                              "description": "Default application installation directory."
+                            },
+                            {
+                              "value": "ProgramFilesX86",
+                              "label": "Program Files x86",
+                              "description": "32-bit application installation directory on 64-bit Windows."
+                            },
+                            {
+                              "value": "System",
+                              "label": "System directory",
+                              "description": "Operating-system system directory."
+                            },
+                            {
+                              "value": "Windows",
+                              "label": "Windows directory",
+                              "description": "Windows installation directory."
+                            }
+                          ],
+                          "pickerConfig": {
+                            "title": "Select folder",
+                            "selectionLabel": "Selected value",
+                            "subtitle": "Well-known directory resolved by .NET.",
+                            "multiSelect": false,
+                            "valueSeparator": " ",
+                            "emptyValue": "",
+                            "applyDefaultIfEmpty": false,
+                            "sections": [
+                              {
+                                "label": "Documented command options",
+                                "description": "Choose documented values for the generated command.",
+                                "groups": [
+                                  {
+                                    "label": "Available values",
+                                    "description": "Select the value or values matching the intended behavior.",
+                                    "items": [
+                                      {
+                                        "value": "UserProfile",
+                                        "label": "User profile",
+                                        "description": "Current user profile directory."
+                                      },
+                                      {
+                                        "value": "Desktop",
+                                        "label": "Desktop",
+                                        "description": "Current user desktop directory."
+                                      },
+                                      {
+                                        "value": "MyDocuments",
+                                        "label": "Documents",
+                                        "description": "Current user documents directory."
+                                      },
+                                      {
+                                        "value": "ApplicationData",
+                                        "label": "Roaming AppData",
+                                        "description": "Current user roaming application-data directory."
+                                      },
+                                      {
+                                        "value": "LocalApplicationData",
+                                        "label": "Local AppData",
+                                        "description": "Current user local application-data directory."
+                                      },
+                                      {
+                                        "value": "CommonApplicationData",
+                                        "label": "ProgramData",
+                                        "description": "Machine-wide application-data directory."
+                                      },
+                                      {
+                                        "value": "ProgramFiles",
+                                        "label": "Program Files",
+                                        "description": "Default application installation directory."
+                                      },
+                                      {
+                                        "value": "ProgramFilesX86",
+                                        "label": "Program Files x86",
+                                        "description": "32-bit application installation directory on 64-bit Windows."
+                                      },
+                                      {
+                                        "value": "System",
+                                        "label": "System directory",
+                                        "description": "Operating-system system directory."
+                                      },
+                                      {
+                                        "value": "Windows",
+                                        "label": "Windows directory",
+                                        "description": "Windows installation directory."
+                                      }
+                                    ]
+                                  }
+                                ]
+                              }
+                            ]
+                          }
+                        }
+                      ],
+                      "symbolKind": "command",
+                      "declaration": "[Environment]::GetFolderPath(FOLDER)",
+                      "environment": "Scripting / System",
+                      "header": "PowerShell 7"
+                    },
+                    {
+                      "name": "Get-Location",
+                      "returnType": "command exit status",
+                      "signature": "Get-Location",
+                      "insertText": "Get-Location",
+                      "library": "PowerShell 7",
+                      "category": "Files, Data & Configuration",
+                      "description": "Display the current PowerShell working directory.",
+                      "longDescription": "Display the current PowerShell working directory.\n\nSource: https://learn.microsoft.com/en-us/powershell/module/microsoft.powershell.management/get-location\nOfficial reference documentation. Review platform requirements, privileges and generated values before execution.",
+                      "parameters": [],
+                      "symbolKind": "command",
+                      "declaration": "Get-Location",
+                      "environment": "Scripting / System",
+                      "header": "PowerShell 7"
+                    },
+                    {
+                      "name": "Resolve-Path",
+                      "returnType": "command exit status",
+                      "signature": "Resolve-Path PATH",
+                      "insertText": "Resolve-Path -Path \"{{path}}\" {{flags}}",
+                      "library": "PowerShell 7",
+                      "category": "Files, Data & Configuration",
+                      "description": "Resolve a relative or provider path into its canonical PowerShell path.",
+                      "longDescription": "Resolve a relative or provider path into its canonical PowerShell path.\n\nSource: https://learn.microsoft.com/en-us/powershell/module/microsoft.powershell.management/resolve-path\nOfficial reference documentation. Review platform requirements, privileges and generated values before execution.",
+                      "parameters": [
+                        {
+                          "name": "path",
+                          "type": "path",
+                          "description": "Path to resolve.",
+                          "editorType": "text",
+                          "defaultValue": "."
+                        },
+                        {
+                          "name": "flags",
+                          "type": "optional flags",
+                          "description": "Optional Resolve-Path switches.",
+                          "editorType": "enum",
+                          "defaultValue": "",
+                          "options": [
+                            {
+                              "value": "-Relative",
+                              "label": "Relative output",
+                              "description": "Return a relative path."
+                            },
+                            {
+                              "value": "-RelativeBasePath .",
+                              "label": "Explicit base path",
+                              "description": "Resolve relative to the current directory."
+                            },
+                            {
+                              "value": "-ErrorAction Stop",
+                              "label": "Stop on error",
+                              "description": "Turn lookup failures into terminating errors."
+                            }
+                          ],
+                          "pickerConfig": {
+                            "title": "Select flags",
+                            "selectionLabel": "Combined options",
+                            "subtitle": "Optional Resolve-Path switches.",
+                            "multiSelect": true,
+                            "valueSeparator": " ",
+                            "emptyValue": "",
+                            "applyDefaultIfEmpty": false,
+                            "sections": [
+                              {
+                                "label": "Documented command options",
+                                "description": "Choose documented values for the generated command.",
+                                "groups": [
+                                  {
+                                    "label": "Available values",
+                                    "description": "Select the value or values matching the intended behavior.",
+                                    "items": [
+                                      {
+                                        "value": "-Relative",
+                                        "label": "Relative output",
+                                        "description": "Return a relative path."
+                                      },
+                                      {
+                                        "value": "-RelativeBasePath .",
+                                        "label": "Explicit base path",
+                                        "description": "Resolve relative to the current directory."
+                                      },
+                                      {
+                                        "value": "-ErrorAction Stop",
+                                        "label": "Stop on error",
+                                        "description": "Turn lookup failures into terminating errors."
+                                      }
+                                    ]
+                                  }
+                                ]
+                              }
+                            ]
+                          },
+                          "optional": true
+                        }
+                      ],
+                      "symbolKind": "command",
+                      "declaration": "Resolve-Path PATH",
+                      "environment": "Scripting / System",
+                      "header": "PowerShell 7"
+                    }
+                  ]
                 }
               ]
             },
@@ -11857,6 +12543,210 @@
                     }
                   ],
                   "groups": []
+                },
+                {
+                  "name": "Local hosts file aliases & DNS cache",
+                  "functions": [
+                    {
+                      "name": "Get-Content Windows hosts file",
+                      "returnType": "command exit status",
+                      "signature": "Get-Content Windows hosts file",
+                      "insertText": "Get-Content -LiteralPath \"$env:SystemRoot\\System32\\drivers\\etc\\hosts\"",
+                      "library": "PowerShell 7",
+                      "category": "Windows Administration",
+                      "description": "Display local Windows hosts-file aliases.",
+                      "longDescription": "Display local Windows hosts-file aliases.\n\nSource: https://learn.microsoft.com/en-us/troubleshoot/windows-server/networking/cannot-modify-hosts-lmhosts-files\nOfficial reference documentation. Review platform requirements, privileges and generated values before execution.",
+                      "parameters": [],
+                      "symbolKind": "command",
+                      "declaration": "Get-Content Windows hosts file",
+                      "environment": "Scripting / System",
+                      "header": "PowerShell 7"
+                    },
+                    {
+                      "name": "Select-String Windows hosts alias",
+                      "returnType": "command exit status",
+                      "signature": "Select-String Windows hosts alias",
+                      "insertText": "Select-String -LiteralPath \"$env:SystemRoot\\System32\\drivers\\etc\\hosts\" -Pattern \"{{pattern}}\"",
+                      "library": "PowerShell 7",
+                      "category": "Windows Administration",
+                      "description": "Search the Windows hosts file for one IP address, hostname or alias.",
+                      "longDescription": "Search the Windows hosts file for one IP address, hostname or alias.\n\nSource: https://learn.microsoft.com/en-us/powershell/module/microsoft.powershell.utility/select-string\nOfficial reference documentation. Review platform requirements, privileges and generated values before execution.",
+                      "parameters": [
+                        {
+                          "name": "pattern",
+                          "type": "search pattern",
+                          "description": "PowerShell regular-expression pattern.",
+                          "editorType": "text",
+                          "defaultValue": "raspberrypi"
+                        }
+                      ],
+                      "symbolKind": "command",
+                      "declaration": "Select-String Windows hosts alias",
+                      "environment": "Scripting / System",
+                      "header": "PowerShell 7"
+                    },
+                    {
+                      "name": "Add Windows hosts alias",
+                      "returnType": "command exit status",
+                      "signature": "Add hosts alias IP HOSTNAME",
+                      "insertText": "Add-Content -LiteralPath \"$env:SystemRoot\\System32\\drivers\\etc\\hosts\" -Value \"{{ip}}`t{{alias}}\"",
+                      "library": "PowerShell 7",
+                      "category": "Windows Administration",
+                      "description": "Append one static IP-to-hostname mapping to the Windows hosts file. Run from an elevated terminal and avoid duplicate aliases.",
+                      "longDescription": "Append one static IP-to-hostname mapping to the Windows hosts file. Run from an elevated terminal and avoid duplicate aliases.\n\nSource: https://learn.microsoft.com/en-us/troubleshoot/windows-server/networking/cannot-modify-hosts-lmhosts-files\nOfficial reference documentation. Review platform requirements, privileges and generated values before execution.",
+                      "parameters": [
+                        {
+                          "name": "ip",
+                          "type": "IP address",
+                          "description": "IPv4 or IPv6 address associated with the alias.",
+                          "editorType": "text",
+                          "defaultValue": "192.168.1.42"
+                        },
+                        {
+                          "name": "alias",
+                          "type": "host alias",
+                          "description": "Local hostname alias.",
+                          "editorType": "text",
+                          "defaultValue": "raspberrypi"
+                        }
+                      ],
+                      "symbolKind": "command",
+                      "declaration": "Add hosts alias IP HOSTNAME",
+                      "environment": "Scripting / System",
+                      "header": "PowerShell 7"
+                    },
+                    {
+                      "name": "Remove Windows hosts alias",
+                      "returnType": "command exit status",
+                      "signature": "Remove hosts alias HOSTNAME",
+                      "insertText": "Copy-Item \"$env:SystemRoot\\System32\\drivers\\etc\\hosts\" \"$env:SystemRoot\\System32\\drivers\\etc\\hosts.bak\" -Force\n(Get-Content -LiteralPath \"$env:SystemRoot\\System32\\drivers\\etc\\hosts\") | Where-Object { $_ -notmatch \"(^|\\s){{alias}}(\\s|$)\" } | Set-Content -LiteralPath \"$env:SystemRoot\\System32\\drivers\\etc\\hosts\"",
+                      "library": "PowerShell 7",
+                      "category": "Windows Administration",
+                      "description": "Back up the Windows hosts file then remove lines containing one hostname alias. Run from an elevated terminal and review the preview carefully.",
+                      "longDescription": "Back up the Windows hosts file then remove lines containing one hostname alias. Run from an elevated terminal and review the preview carefully.\n\nSource: https://learn.microsoft.com/en-us/troubleshoot/windows-server/networking/cannot-modify-hosts-lmhosts-files\nOfficial reference documentation. Review platform requirements, privileges and generated values before execution.",
+                      "parameters": [
+                        {
+                          "name": "alias",
+                          "type": "host alias",
+                          "description": "Simple hostname alias removed from the Windows hosts file.",
+                          "editorType": "text",
+                          "defaultValue": "raspberrypi"
+                        }
+                      ],
+                      "symbolKind": "command",
+                      "declaration": "Remove hosts alias HOSTNAME",
+                      "environment": "Scripting / System",
+                      "header": "PowerShell 7"
+                    },
+                    {
+                      "name": "Clear-DnsClientCache",
+                      "returnType": "command exit status",
+                      "signature": "Clear-DnsClientCache",
+                      "insertText": "Clear-DnsClientCache",
+                      "library": "PowerShell 7",
+                      "category": "Windows Administration",
+                      "description": "Clear the local Windows DNS client cache after changing aliases.",
+                      "longDescription": "Clear the local Windows DNS client cache after changing aliases.\n\nSource: https://learn.microsoft.com/en-us/powershell/module/dnsclient/clear-dnsclientcache\nOfficial reference documentation. Review platform requirements, privileges and generated values before execution.",
+                      "parameters": [],
+                      "symbolKind": "command",
+                      "declaration": "Clear-DnsClientCache",
+                      "environment": "Scripting / System",
+                      "header": "PowerShell 7"
+                    },
+                    {
+                      "name": "Test-Connection host alias",
+                      "returnType": "command exit status",
+                      "signature": "Test-Connection HOST",
+                      "insertText": "Test-Connection -TargetName \"{{host}}\" -Count {{count}} {{flags}}",
+                      "library": "PowerShell 7",
+                      "category": "Windows Administration",
+                      "description": "Test local name resolution and reachability for a host alias.",
+                      "longDescription": "Test local name resolution and reachability for a host alias.\n\nSource: https://learn.microsoft.com/en-us/powershell/module/microsoft.powershell.management/test-connection\nOfficial reference documentation. Review platform requirements, privileges and generated values before execution.",
+                      "parameters": [
+                        {
+                          "name": "host",
+                          "type": "hostname or alias",
+                          "description": "Hostname, alias or IP address tested.",
+                          "editorType": "text",
+                          "defaultValue": "raspberrypi"
+                        },
+                        {
+                          "name": "count",
+                          "type": "echo count",
+                          "description": "Number of ICMP requests.",
+                          "editorType": "text",
+                          "defaultValue": "2"
+                        },
+                        {
+                          "name": "flags",
+                          "type": "optional flags",
+                          "description": "Optional Test-Connection switches.",
+                          "editorType": "enum",
+                          "defaultValue": "",
+                          "options": [
+                            {
+                              "value": "-Quiet",
+                              "label": "Boolean result",
+                              "description": "Return only success or failure."
+                            },
+                            {
+                              "value": "-IPv4",
+                              "label": "Force IPv4",
+                              "description": "Use IPv4."
+                            },
+                            {
+                              "value": "-IPv6",
+                              "label": "Force IPv6",
+                              "description": "Use IPv6."
+                            }
+                          ],
+                          "pickerConfig": {
+                            "title": "Select flags",
+                            "selectionLabel": "Combined options",
+                            "subtitle": "Optional Test-Connection switches.",
+                            "multiSelect": true,
+                            "valueSeparator": " ",
+                            "emptyValue": "",
+                            "applyDefaultIfEmpty": false,
+                            "sections": [
+                              {
+                                "label": "Documented command options",
+                                "description": "Choose documented values for the generated command.",
+                                "groups": [
+                                  {
+                                    "label": "Available values",
+                                    "description": "Select the value or values matching the intended behavior.",
+                                    "items": [
+                                      {
+                                        "value": "-Quiet",
+                                        "label": "Boolean result",
+                                        "description": "Return only success or failure."
+                                      },
+                                      {
+                                        "value": "-IPv4",
+                                        "label": "Force IPv4",
+                                        "description": "Use IPv4."
+                                      },
+                                      {
+                                        "value": "-IPv6",
+                                        "label": "Force IPv6",
+                                        "description": "Use IPv6."
+                                      }
+                                    ]
+                                  }
+                                ]
+                              }
+                            ]
+                          },
+                          "optional": true
+                        }
+                      ],
+                      "symbolKind": "command",
+                      "declaration": "Test-Connection HOST",
+                      "environment": "Scripting / System",
+                      "header": "PowerShell 7"
+                    }
+                  ]
                 }
               ]
             },
@@ -13356,34 +14246,6 @@
                       "parameters": [],
                       "symbolKind": "snippet",
                       "declaration": "if not defined",
-                      "environment": "Scripting / System",
-                      "header": "Windows CMD & Batch"
-                    },
-                    {
-                      "name": "set quoted variable assignment",
-                      "returnType": "batch statement",
-                      "signature": "set \"NAME=value\"",
-                      "insertText": "set \"{{name}}={{value}}\"",
-                      "library": "Windows CMD & Batch",
-                      "category": "Batch Language & Script Structure",
-                      "description": "Assign an environment variable using the recommended quoted form so trailing spaces outside the closing quote are not stored.",
-                      "longDescription": "Assign an environment variable using the recommended quoted form so trailing spaces outside the closing quote are not stored.\n\nSource: https://learn.microsoft.com/en-us/windows-server/administration/windows-commands/set_1\nOfficial Microsoft Learn Windows command reference. Verify target-host command extensions and script assumptions before deployment.",
-                      "parameters": [
-                        {
-                          "name": "name",
-                          "type": "variable name",
-                          "description": "Environment-variable name.",
-                          "defaultValue": "INPUT"
-                        },
-                        {
-                          "name": "value",
-                          "type": "string expression",
-                          "description": "Literal value, environment expansion or command argument expansion.",
-                          "defaultValue": "%~1"
-                        }
-                      ],
-                      "symbolKind": "function",
-                      "declaration": "set \"NAME=value\"",
                       "environment": "Scripting / System",
                       "header": "Windows CMD & Batch"
                     },
@@ -17563,6 +18425,314 @@
                     }
                   ],
                   "groups": []
+                },
+                {
+                  "name": "Environment variables & known paths",
+                  "functions": [
+                    {
+                      "name": "echo Windows environment value (CMD)",
+                      "returnType": "command exit status",
+                      "signature": "echo %VARIABLE%",
+                      "insertText": "echo %{{variable}}%",
+                      "library": "Windows CMD & Batch",
+                      "category": "Batch Language & Script Structure",
+                      "description": "Display one common Windows environment value or known path in CMD.",
+                      "longDescription": "Display one common Windows environment value or known path in CMD.\n\nSource: https://learn.microsoft.com/en-us/windows-server/administration/windows-commands/set_1\nOfficial reference documentation. Review platform requirements, privileges and generated values before execution.",
+                      "parameters": [
+                        {
+                          "name": "variable",
+                          "type": "Windows environment variable",
+                          "description": "Variable expanded by CMD between percent signs.",
+                          "editorType": "enum",
+                          "defaultValue": "USERPROFILE",
+                          "options": [
+                            {
+                              "value": "USERPROFILE",
+                              "label": "User profile",
+                              "description": "Current Windows user profile directory."
+                            },
+                            {
+                              "value": "HOMEDRIVE",
+                              "label": "Home drive",
+                              "description": "Drive containing the current user profile."
+                            },
+                            {
+                              "value": "HOMEPATH",
+                              "label": "Home path",
+                              "description": "Profile-relative user home path."
+                            },
+                            {
+                              "value": "APPDATA",
+                              "label": "Roaming application data",
+                              "description": "Current user roaming AppData directory."
+                            },
+                            {
+                              "value": "LOCALAPPDATA",
+                              "label": "Local application data",
+                              "description": "Current user local AppData directory."
+                            },
+                            {
+                              "value": "ProgramData",
+                              "label": "Shared application data",
+                              "description": "Machine-wide ProgramData directory."
+                            },
+                            {
+                              "value": "ProgramFiles",
+                              "label": "Program Files",
+                              "description": "Default 64-bit program installation directory."
+                            },
+                            {
+                              "value": "ProgramFiles(x86)",
+                              "label": "Program Files x86",
+                              "description": "Default 32-bit program installation directory on 64-bit Windows."
+                            },
+                            {
+                              "value": "SystemRoot",
+                              "label": "Windows directory",
+                              "description": "Windows installation directory."
+                            },
+                            {
+                              "value": "TEMP",
+                              "label": "Temporary directory",
+                              "description": "Current temporary directory."
+                            },
+                            {
+                              "value": "PATH",
+                              "label": "Executable search path",
+                              "description": "Executable search path inherited by the current shell."
+                            },
+                            {
+                              "value": "CD",
+                              "label": "Current directory",
+                              "description": "CMD dynamic current-directory variable."
+                            },
+                            {
+                              "value": "USERNAME",
+                              "label": "Current user name",
+                              "description": "Current Windows user account name."
+                            },
+                            {
+                              "value": "COMPUTERNAME",
+                              "label": "Computer name",
+                              "description": "Local Windows host name."
+                            }
+                          ],
+                          "pickerConfig": {
+                            "title": "Select variable",
+                            "selectionLabel": "Selected value",
+                            "subtitle": "Variable expanded by CMD between percent signs.",
+                            "multiSelect": false,
+                            "valueSeparator": " ",
+                            "emptyValue": "",
+                            "applyDefaultIfEmpty": false,
+                            "sections": [
+                              {
+                                "label": "Documented command options",
+                                "description": "Choose documented values for the generated command.",
+                                "groups": [
+                                  {
+                                    "label": "Available values",
+                                    "description": "Select the value or values matching the intended behavior.",
+                                    "items": [
+                                      {
+                                        "value": "USERPROFILE",
+                                        "label": "User profile",
+                                        "description": "Current Windows user profile directory."
+                                      },
+                                      {
+                                        "value": "HOMEDRIVE",
+                                        "label": "Home drive",
+                                        "description": "Drive containing the current user profile."
+                                      },
+                                      {
+                                        "value": "HOMEPATH",
+                                        "label": "Home path",
+                                        "description": "Profile-relative user home path."
+                                      },
+                                      {
+                                        "value": "APPDATA",
+                                        "label": "Roaming application data",
+                                        "description": "Current user roaming AppData directory."
+                                      },
+                                      {
+                                        "value": "LOCALAPPDATA",
+                                        "label": "Local application data",
+                                        "description": "Current user local AppData directory."
+                                      },
+                                      {
+                                        "value": "ProgramData",
+                                        "label": "Shared application data",
+                                        "description": "Machine-wide ProgramData directory."
+                                      },
+                                      {
+                                        "value": "ProgramFiles",
+                                        "label": "Program Files",
+                                        "description": "Default 64-bit program installation directory."
+                                      },
+                                      {
+                                        "value": "ProgramFiles(x86)",
+                                        "label": "Program Files x86",
+                                        "description": "Default 32-bit program installation directory on 64-bit Windows."
+                                      },
+                                      {
+                                        "value": "SystemRoot",
+                                        "label": "Windows directory",
+                                        "description": "Windows installation directory."
+                                      },
+                                      {
+                                        "value": "TEMP",
+                                        "label": "Temporary directory",
+                                        "description": "Current temporary directory."
+                                      },
+                                      {
+                                        "value": "PATH",
+                                        "label": "Executable search path",
+                                        "description": "Executable search path inherited by the current shell."
+                                      },
+                                      {
+                                        "value": "CD",
+                                        "label": "Current directory",
+                                        "description": "CMD dynamic current-directory variable."
+                                      },
+                                      {
+                                        "value": "USERNAME",
+                                        "label": "Current user name",
+                                        "description": "Current Windows user account name."
+                                      },
+                                      {
+                                        "value": "COMPUTERNAME",
+                                        "label": "Computer name",
+                                        "description": "Local Windows host name."
+                                      }
+                                    ]
+                                  }
+                                ]
+                              }
+                            ]
+                          }
+                        }
+                      ],
+                      "symbolKind": "command",
+                      "declaration": "echo %VARIABLE%",
+                      "environment": "Scripting / System",
+                      "header": "Windows CMD & Batch"
+                    },
+                    {
+                      "name": "set list variables (CMD)",
+                      "returnType": "command exit status",
+                      "signature": "set [PREFIX]",
+                      "insertText": "set {{prefix}}",
+                      "library": "Windows CMD & Batch",
+                      "category": "Batch Language & Script Structure",
+                      "description": "List current CMD environment variables, optionally filtering by a name prefix.",
+                      "longDescription": "List current CMD environment variables, optionally filtering by a name prefix.\n\nSource: https://learn.microsoft.com/en-us/windows-server/administration/windows-commands/set_1\nOfficial reference documentation. Review platform requirements, privileges and generated values before execution.",
+                      "parameters": [
+                        {
+                          "name": "prefix",
+                          "type": "optional variable prefix",
+                          "description": "Optional variable-name prefix used by CMD set filtering.",
+                          "editorType": "text",
+                          "defaultValue": "",
+                          "optional": true,
+                          "placeholder": "PATH"
+                        }
+                      ],
+                      "symbolKind": "command",
+                      "declaration": "set [PREFIX]",
+                      "environment": "Scripting / System",
+                      "header": "Windows CMD & Batch"
+                    },
+                    {
+                      "name": "set current variable (CMD)",
+                      "returnType": "command exit status",
+                      "signature": "set \"NAME=VALUE\"",
+                      "insertText": "set \"{{name}}={{value}}\"",
+                      "library": "Windows CMD & Batch",
+                      "category": "Batch Language & Script Structure",
+                      "description": "Create or modify one environment variable for the current CMD process and its children.",
+                      "longDescription": "Create or modify one environment variable for the current CMD process and its children.\n\nSource: https://learn.microsoft.com/en-us/windows-server/administration/windows-commands/set_1\nOfficial reference documentation. Review platform requirements, privileges and generated values before execution.",
+                      "parameters": [
+                        {
+                          "name": "name",
+                          "type": "variable name",
+                          "description": "Environment variable name.",
+                          "editorType": "text",
+                          "defaultValue": "APP_MODE"
+                        },
+                        {
+                          "name": "value",
+                          "type": "variable value",
+                          "description": "Value assigned in the current shell only.",
+                          "editorType": "text",
+                          "defaultValue": "production"
+                        }
+                      ],
+                      "symbolKind": "command",
+                      "declaration": "set \"NAME=VALUE\"",
+                      "environment": "Scripting / System",
+                      "header": "Windows CMD & Batch"
+                    },
+                    {
+                      "name": "path show (CMD)",
+                      "returnType": "command exit status",
+                      "signature": "path",
+                      "insertText": "path",
+                      "library": "Windows CMD & Batch",
+                      "category": "Batch Language & Script Structure",
+                      "description": "Display the executable search path inherited by the current CMD process.",
+                      "longDescription": "Display the executable search path inherited by the current CMD process.\n\nSource: https://learn.microsoft.com/en-us/windows-server/administration/windows-commands/path\nOfficial reference documentation. Review platform requirements, privileges and generated values before execution.",
+                      "parameters": [],
+                      "symbolKind": "command",
+                      "declaration": "path",
+                      "environment": "Scripting / System",
+                      "header": "Windows CMD & Batch"
+                    },
+                    {
+                      "name": "cd current directory (CMD)",
+                      "returnType": "command exit status",
+                      "signature": "cd",
+                      "insertText": "cd",
+                      "library": "Windows CMD & Batch",
+                      "category": "Batch Language & Script Structure",
+                      "description": "Display the current working directory in CMD.",
+                      "longDescription": "Display the current working directory in CMD.\n\nSource: https://learn.microsoft.com/en-us/windows-server/administration/windows-commands/cd\nOfficial reference documentation. Review platform requirements, privileges and generated values before execution.",
+                      "parameters": [],
+                      "symbolKind": "command",
+                      "declaration": "cd",
+                      "environment": "Scripting / System",
+                      "header": "Windows CMD & Batch"
+                    },
+                    {
+                      "name": "reg query user environment variables",
+                      "returnType": "command exit status",
+                      "signature": "reg query HKCU\\Environment",
+                      "insertText": "reg query \"HKCU\\Environment\"",
+                      "library": "Windows CMD & Batch",
+                      "category": "Batch Language & Script Structure",
+                      "description": "Inspect persistent per-user Windows environment variables from the registry.",
+                      "longDescription": "Inspect persistent per-user Windows environment variables from the registry.\n\nSource: https://learn.microsoft.com/en-us/windows-server/administration/windows-commands/reg-query\nOfficial reference documentation. Review platform requirements, privileges and generated values before execution.",
+                      "parameters": [],
+                      "symbolKind": "command",
+                      "declaration": "reg query HKCU\\Environment",
+                      "environment": "Scripting / System",
+                      "header": "Windows CMD & Batch"
+                    },
+                    {
+                      "name": "reg query machine environment variables",
+                      "returnType": "command exit status",
+                      "signature": "reg query HKLM\\...\\Environment",
+                      "insertText": "reg query \"HKLM\\SYSTEM\\CurrentControlSet\\Control\\Session Manager\\Environment\"",
+                      "library": "Windows CMD & Batch",
+                      "category": "Batch Language & Script Structure",
+                      "description": "Inspect persistent machine-wide Windows environment variables from the registry.",
+                      "longDescription": "Inspect persistent machine-wide Windows environment variables from the registry.\n\nSource: https://learn.microsoft.com/en-us/windows-server/administration/windows-commands/reg-query\nOfficial reference documentation. Review platform requirements, privileges and generated values before execution.",
+                      "parameters": [],
+                      "symbolKind": "command",
+                      "declaration": "reg query HKLM\\...\\Environment",
+                      "environment": "Scripting / System",
+                      "header": "Windows CMD & Batch"
+                    }
+                  ]
                 }
               ]
             },
@@ -20606,6 +21776,79 @@
                     }
                   ],
                   "groups": []
+                },
+                {
+                  "name": "Windows hosts file & resolver cache",
+                  "functions": [
+                    {
+                      "name": "type Windows hosts file (CMD)",
+                      "returnType": "command exit status",
+                      "signature": "type %SystemRoot%\\System32\\drivers\\etc\\hosts",
+                      "insertText": "type \"%SystemRoot%\\System32\\drivers\\etc\\hosts\"",
+                      "library": "Windows CMD & Batch",
+                      "category": "Files, Text & Deployment",
+                      "description": "Display local static hostname aliases defined in the Windows hosts file.",
+                      "longDescription": "Display local static hostname aliases defined in the Windows hosts file.\n\nSource: https://learn.microsoft.com/en-us/troubleshoot/windows-server/networking/cannot-modify-hosts-lmhosts-files\nOfficial reference documentation. Review platform requirements, privileges and generated values before execution.",
+                      "parameters": [],
+                      "symbolKind": "command",
+                      "declaration": "type %SystemRoot%\\System32\\drivers\\etc\\hosts",
+                      "environment": "Scripting / System",
+                      "header": "Windows CMD & Batch"
+                    },
+                    {
+                      "name": "findstr Windows hosts alias (CMD)",
+                      "returnType": "command exit status",
+                      "signature": "findstr /i /r PATTERN hosts",
+                      "insertText": "findstr /i /r \"{{pattern}}\" \"%SystemRoot%\\System32\\drivers\\etc\\hosts\"",
+                      "library": "Windows CMD & Batch",
+                      "category": "Files, Text & Deployment",
+                      "description": "Search the Windows hosts file for an IP address, hostname or alias.",
+                      "longDescription": "Search the Windows hosts file for an IP address, hostname or alias.\n\nSource: https://learn.microsoft.com/en-us/windows-server/administration/windows-commands/findstr\nOfficial reference documentation. Review platform requirements, privileges and generated values before execution.",
+                      "parameters": [
+                        {
+                          "name": "pattern",
+                          "type": "search pattern",
+                          "description": "Regular-expression pattern passed to findstr.",
+                          "editorType": "text",
+                          "defaultValue": "raspberrypi"
+                        }
+                      ],
+                      "symbolKind": "command",
+                      "declaration": "findstr /i /r PATTERN hosts",
+                      "environment": "Scripting / System",
+                      "header": "Windows CMD & Batch"
+                    },
+                    {
+                      "name": "ipconfig displaydns",
+                      "returnType": "command exit status",
+                      "signature": "ipconfig /displaydns",
+                      "insertText": "ipconfig /displaydns",
+                      "library": "Windows CMD & Batch",
+                      "category": "Files, Text & Deployment",
+                      "description": "Display the Windows DNS resolver cache, including recently resolved aliases.",
+                      "longDescription": "Display the Windows DNS resolver cache, including recently resolved aliases.\n\nSource: https://learn.microsoft.com/en-us/windows-server/administration/windows-commands/ipconfig\nOfficial reference documentation. Review platform requirements, privileges and generated values before execution.",
+                      "parameters": [],
+                      "symbolKind": "command",
+                      "declaration": "ipconfig /displaydns",
+                      "environment": "Scripting / System",
+                      "header": "Windows CMD & Batch"
+                    },
+                    {
+                      "name": "ipconfig flushdns",
+                      "returnType": "command exit status",
+                      "signature": "ipconfig /flushdns",
+                      "insertText": "ipconfig /flushdns",
+                      "library": "Windows CMD & Batch",
+                      "category": "Files, Text & Deployment",
+                      "description": "Clear the Windows DNS resolver cache after changing hostname mappings.",
+                      "longDescription": "Clear the Windows DNS resolver cache after changing hostname mappings.\n\nSource: https://learn.microsoft.com/en-us/windows-server/administration/windows-commands/ipconfig\nOfficial reference documentation. Review platform requirements, privileges and generated values before execution.",
+                      "parameters": [],
+                      "symbolKind": "command",
+                      "declaration": "ipconfig /flushdns",
+                      "environment": "Scripting / System",
+                      "header": "Windows CMD & Batch"
+                    }
+                  ]
                 }
               ]
             },
@@ -26360,6 +27603,203 @@
                     }
                   ],
                   "groups": []
+                },
+                {
+                  "name": "Environment variables & known paths",
+                  "functions": [
+                    {
+                      "name": "printenv list",
+                      "returnType": "command exit status",
+                      "signature": "printenv",
+                      "insertText": "printenv",
+                      "library": "Bash & POSIX Shell",
+                      "category": "Shell Language, Reliability & Portability",
+                      "description": "List environment variables exported to the current shell process.",
+                      "longDescription": "List environment variables exported to the current shell process.\n\nSource: https://www.gnu.org/software/coreutils/manual/html_node/printenv-invocation.html\nOfficial reference documentation. Review platform requirements, privileges and generated values before execution.",
+                      "parameters": [],
+                      "symbolKind": "command",
+                      "declaration": "printenv",
+                      "environment": "Scripting / System",
+                      "header": "Bash & POSIX Shell"
+                    },
+                    {
+                      "name": "printenv variable",
+                      "returnType": "command exit status",
+                      "signature": "printenv NAME",
+                      "insertText": "printenv \"{{name}}\"",
+                      "library": "Bash & POSIX Shell",
+                      "category": "Shell Language, Reliability & Portability",
+                      "description": "Display one exported environment variable.",
+                      "longDescription": "Display one exported environment variable.\n\nSource: https://www.gnu.org/software/coreutils/manual/html_node/printenv-invocation.html\nOfficial reference documentation. Review platform requirements, privileges and generated values before execution.",
+                      "parameters": [
+                        {
+                          "name": "name",
+                          "type": "variable name",
+                          "description": "Environment variable name.",
+                          "editorType": "text",
+                          "defaultValue": "PATH"
+                        }
+                      ],
+                      "symbolKind": "command",
+                      "declaration": "printenv NAME",
+                      "environment": "Scripting / System",
+                      "header": "Bash & POSIX Shell"
+                    },
+                    {
+                      "name": "export environment variable",
+                      "returnType": "command exit status",
+                      "signature": "export NAME=VALUE",
+                      "insertText": "export {{name}}=\"{{value}}\"",
+                      "library": "Bash & POSIX Shell",
+                      "category": "Shell Language, Reliability & Portability",
+                      "description": "Export one environment variable in the current Bash process and its child processes.",
+                      "longDescription": "Export one environment variable in the current Bash process and its child processes.\n\nSource: https://www.gnu.org/software/bash/manual/bash.html#index-export\nOfficial reference documentation. Review platform requirements, privileges and generated values before execution.",
+                      "parameters": [
+                        {
+                          "name": "name",
+                          "type": "variable name",
+                          "description": "Shell variable name.",
+                          "editorType": "text",
+                          "defaultValue": "APP_MODE"
+                        },
+                        {
+                          "name": "value",
+                          "type": "variable value",
+                          "description": "Exported variable value.",
+                          "editorType": "text",
+                          "defaultValue": "production"
+                        }
+                      ],
+                      "symbolKind": "command",
+                      "declaration": "export NAME=VALUE",
+                      "environment": "Scripting / System",
+                      "header": "Bash & POSIX Shell"
+                    },
+                    {
+                      "name": "unset environment variable",
+                      "returnType": "command exit status",
+                      "signature": "unset NAME",
+                      "insertText": "unset \"{{name}}\"",
+                      "library": "Bash & POSIX Shell",
+                      "category": "Shell Language, Reliability & Portability",
+                      "description": "Remove one variable from the current shell environment.",
+                      "longDescription": "Remove one variable from the current shell environment.\n\nSource: https://www.gnu.org/software/bash/manual/bash.html#index-unset\nOfficial reference documentation. Review platform requirements, privileges and generated values before execution.",
+                      "parameters": [
+                        {
+                          "name": "name",
+                          "type": "variable name",
+                          "description": "Shell variable name removed from the current process.",
+                          "editorType": "text",
+                          "defaultValue": "APP_MODE"
+                        }
+                      ],
+                      "symbolKind": "command",
+                      "declaration": "unset NAME",
+                      "environment": "Scripting / System",
+                      "header": "Bash & POSIX Shell"
+                    },
+                    {
+                      "name": "pwd current directory",
+                      "returnType": "command exit status",
+                      "signature": "pwd",
+                      "insertText": "pwd",
+                      "library": "Bash & POSIX Shell",
+                      "category": "Shell Language, Reliability & Portability",
+                      "description": "Display the current Bash working directory.",
+                      "longDescription": "Display the current Bash working directory.\n\nSource: https://www.gnu.org/software/coreutils/manual/html_node/pwd-invocation.html\nOfficial reference documentation. Review platform requirements, privileges and generated values before execution.",
+                      "parameters": [],
+                      "symbolKind": "command",
+                      "declaration": "pwd",
+                      "environment": "Scripting / System",
+                      "header": "Bash & POSIX Shell"
+                    },
+                    {
+                      "name": "realpath canonical path",
+                      "returnType": "command exit status",
+                      "signature": "realpath PATH",
+                      "insertText": "realpath {{flags}} \"{{path}}\"",
+                      "library": "Bash & POSIX Shell",
+                      "category": "Shell Language, Reliability & Portability",
+                      "description": "Resolve a canonical filesystem path.",
+                      "longDescription": "Resolve a canonical filesystem path.\n\nSource: https://www.gnu.org/software/coreutils/manual/html_node/realpath-invocation.html\nOfficial reference documentation. Review platform requirements, privileges and generated values before execution.",
+                      "parameters": [
+                        {
+                          "name": "flags",
+                          "type": "realpath flags",
+                          "description": "Optional realpath switches.",
+                          "editorType": "enum",
+                          "defaultValue": "",
+                          "options": [
+                            {
+                              "value": "-e",
+                              "label": "Require existing path",
+                              "description": "Require every path component to exist."
+                            },
+                            {
+                              "value": "-m",
+                              "label": "Allow missing components",
+                              "description": "Canonicalize even when components are missing."
+                            },
+                            {
+                              "value": "--relative-to=.",
+                              "label": "Relative to current directory",
+                              "description": "Print a relative path from the current directory."
+                            }
+                          ],
+                          "pickerConfig": {
+                            "title": "Select flags",
+                            "selectionLabel": "Combined options",
+                            "subtitle": "Optional realpath switches.",
+                            "multiSelect": true,
+                            "valueSeparator": " ",
+                            "emptyValue": "",
+                            "applyDefaultIfEmpty": false,
+                            "sections": [
+                              {
+                                "label": "Documented command options",
+                                "description": "Choose documented values for the generated command.",
+                                "groups": [
+                                  {
+                                    "label": "Available values",
+                                    "description": "Select the value or values matching the intended behavior.",
+                                    "items": [
+                                      {
+                                        "value": "-e",
+                                        "label": "Require existing path",
+                                        "description": "Require every path component to exist."
+                                      },
+                                      {
+                                        "value": "-m",
+                                        "label": "Allow missing components",
+                                        "description": "Canonicalize even when components are missing."
+                                      },
+                                      {
+                                        "value": "--relative-to=.",
+                                        "label": "Relative to current directory",
+                                        "description": "Print a relative path from the current directory."
+                                      }
+                                    ]
+                                  }
+                                ]
+                              }
+                            ]
+                          },
+                          "optional": true
+                        },
+                        {
+                          "name": "path",
+                          "type": "filesystem path",
+                          "description": "Path resolved by realpath.",
+                          "editorType": "text",
+                          "defaultValue": "."
+                        }
+                      ],
+                      "symbolKind": "command",
+                      "declaration": "realpath PATH",
+                      "environment": "Scripting / System",
+                      "header": "Bash & POSIX Shell"
+                    }
+                  ]
                 }
               ]
             },
@@ -33364,6 +34804,94 @@
                     }
                   ],
                   "groups": []
+                },
+                {
+                  "name": "Local hosts file aliases",
+                  "functions": [
+                    {
+                      "name": "cat hosts file (Linux)",
+                      "returnType": "command exit status",
+                      "signature": "cat /etc/hosts",
+                      "insertText": "cat /etc/hosts",
+                      "library": "Bash & POSIX Shell",
+                      "category": "Networking & Remote Tools",
+                      "description": "Display static local IP-to-hostname mappings from /etc/hosts.",
+                      "longDescription": "Display static local IP-to-hostname mappings from /etc/hosts.\n\nSource: https://man7.org/linux/man-pages/man5/hosts.5.html\nOfficial reference documentation. Review platform requirements, privileges and generated values before execution.",
+                      "parameters": [],
+                      "symbolKind": "command",
+                      "declaration": "cat /etc/hosts",
+                      "environment": "Scripting / System",
+                      "header": "Bash & POSIX Shell"
+                    },
+                    {
+                      "name": "append hosts alias (Linux)",
+                      "returnType": "command exit status",
+                      "signature": "append IP HOSTNAME to /etc/hosts",
+                      "insertText": "printf '%s\\t%s\\n' \"{{ip}}\" \"{{alias}}\" | sudo tee -a /etc/hosts",
+                      "library": "Bash & POSIX Shell",
+                      "category": "Networking & Remote Tools",
+                      "description": "Append one static alias to /etc/hosts. Review for duplicates and run with sudo privileges.",
+                      "longDescription": "Append one static alias to /etc/hosts. Review for duplicates and run with sudo privileges.\n\nSource: https://man7.org/linux/man-pages/man5/hosts.5.html\nOfficial reference documentation. Review platform requirements, privileges and generated values before execution.",
+                      "parameters": [
+                        {
+                          "name": "ip",
+                          "type": "IP address",
+                          "description": "IPv4 or IPv6 address associated with the alias.",
+                          "editorType": "text",
+                          "defaultValue": "192.168.1.42"
+                        },
+                        {
+                          "name": "alias",
+                          "type": "host alias",
+                          "description": "Local hostname alias.",
+                          "editorType": "text",
+                          "defaultValue": "raspberrypi"
+                        }
+                      ],
+                      "symbolKind": "command",
+                      "declaration": "append IP HOSTNAME to /etc/hosts",
+                      "environment": "Scripting / System",
+                      "header": "Bash & POSIX Shell"
+                    },
+                    {
+                      "name": "remove hosts alias (Linux)",
+                      "returnType": "command exit status",
+                      "signature": "remove HOSTNAME from /etc/hosts",
+                      "insertText": "sudo sed -i.bak '/[[:space:]]{{alias}}\\([[:space:]]\\|$\\)/d' /etc/hosts",
+                      "library": "Bash & POSIX Shell",
+                      "category": "Networking & Remote Tools",
+                      "description": "Back up /etc/hosts and remove lines containing one alias. Review the preview before execution.",
+                      "longDescription": "Back up /etc/hosts and remove lines containing one alias. Review the preview before execution.\n\nSource: https://man7.org/linux/man-pages/man5/hosts.5.html\nOfficial reference documentation. Review platform requirements, privileges and generated values before execution.",
+                      "parameters": [
+                        {
+                          "name": "alias",
+                          "type": "host alias",
+                          "description": "Simple hostname alias removed from /etc/hosts.",
+                          "editorType": "text",
+                          "defaultValue": "raspberrypi"
+                        }
+                      ],
+                      "symbolKind": "command",
+                      "declaration": "remove HOSTNAME from /etc/hosts",
+                      "environment": "Scripting / System",
+                      "header": "Bash & POSIX Shell"
+                    },
+                    {
+                      "name": "hostnamectl status",
+                      "returnType": "command exit status",
+                      "signature": "hostnamectl status",
+                      "insertText": "hostnamectl status",
+                      "library": "Bash & POSIX Shell",
+                      "category": "Networking & Remote Tools",
+                      "description": "Display local system hostname metadata where systemd-hostnamed is available.",
+                      "longDescription": "Display local system hostname metadata where systemd-hostnamed is available.\n\nSource: https://www.freedesktop.org/software/systemd/man/latest/hostnamectl.html\nOfficial reference documentation. Review platform requirements, privileges and generated values before execution.",
+                      "parameters": [],
+                      "symbolKind": "command",
+                      "declaration": "hostnamectl status",
+                      "environment": "Scripting / System",
+                      "header": "Bash & POSIX Shell"
+                    }
+                  ]
                 }
               ]
             },
@@ -44101,6 +45629,75 @@
                       "declaration": "ssh user@host\n# Enter the account password only when OpenSSH prompts for it.\n# Do not place a plaintext password in the command line or in a JC Lib parameter.",
                       "environment": "Scripting / System",
                       "header": "OpenSSH & Secure Remote Access"
+                    },
+                    {
+                      "name": "ssh inspect resolved alias",
+                      "returnType": "command exit status",
+                      "signature": "ssh -G ALIAS",
+                      "insertText": "ssh -G \"{{alias}}\"",
+                      "library": "OpenSSH & Secure Remote Access",
+                      "category": "OpenSSH Commands, Keys & Configuration",
+                      "description": "Print the effective OpenSSH client configuration after resolving one Host alias.",
+                      "longDescription": "Print the effective OpenSSH client configuration after resolving one Host alias.\n\nSource: https://man.openbsd.org/ssh.1\nOfficial reference documentation. Review platform requirements, privileges and generated values before execution.",
+                      "parameters": [
+                        {
+                          "name": "alias",
+                          "type": "SSH host alias",
+                          "description": "Alias declared by a Host block in the OpenSSH client configuration.",
+                          "editorType": "text",
+                          "defaultValue": "myraspi"
+                        }
+                      ],
+                      "symbolKind": "command",
+                      "declaration": "ssh -G ALIAS",
+                      "environment": "Scripting / System",
+                      "header": "OpenSSH & Secure Remote Access"
+                    },
+                    {
+                      "name": "ssh list configured aliases (Bash)",
+                      "returnType": "command exit status",
+                      "signature": "grep Host ~/.ssh/config",
+                      "insertText": "grep -nE '^[[:space:]]*Host[[:space:]]+' {{config}}",
+                      "library": "OpenSSH & Secure Remote Access",
+                      "category": "OpenSSH Commands, Keys & Configuration",
+                      "description": "List Host alias declarations from an OpenSSH client configuration file with Bash tools.",
+                      "longDescription": "List Host alias declarations from an OpenSSH client configuration file with Bash tools.\n\nSource: https://man.openbsd.org/ssh_config\nOfficial reference documentation. Review platform requirements, privileges and generated values before execution.",
+                      "parameters": [
+                        {
+                          "name": "config",
+                          "type": "OpenSSH client config",
+                          "description": "Client configuration file.",
+                          "editorType": "text",
+                          "defaultValue": "~/.ssh/config"
+                        }
+                      ],
+                      "symbolKind": "command",
+                      "declaration": "grep Host ~/.ssh/config",
+                      "environment": "Scripting / System",
+                      "header": "OpenSSH & Secure Remote Access"
+                    },
+                    {
+                      "name": "ssh list configured aliases (PowerShell)",
+                      "returnType": "command exit status",
+                      "signature": "Select-String Host $HOME/.ssh/config",
+                      "insertText": "Select-String -Path \"{{config}}\" -Pattern '^\\s*Host\\s+'",
+                      "library": "OpenSSH & Secure Remote Access",
+                      "category": "OpenSSH Commands, Keys & Configuration",
+                      "description": "List Host alias declarations from an OpenSSH client configuration file with PowerShell.",
+                      "longDescription": "List Host alias declarations from an OpenSSH client configuration file with PowerShell.\n\nSource: https://man.openbsd.org/ssh_config\nOfficial reference documentation. Review platform requirements, privileges and generated values before execution.",
+                      "parameters": [
+                        {
+                          "name": "config",
+                          "type": "OpenSSH client config",
+                          "description": "Client configuration file.",
+                          "editorType": "text",
+                          "defaultValue": "$HOME/.ssh/config"
+                        }
+                      ],
+                      "symbolKind": "command",
+                      "declaration": "Select-String Host $HOME/.ssh/config",
+                      "environment": "Scripting / System",
+                      "header": "OpenSSH & Secure Remote Access"
                     }
                   ],
                   "groups": []
@@ -44120,21 +45717,6 @@
                       "parameters": [],
                       "symbolKind": "snippet",
                       "declaration": "ssh-agent ssh-add",
-                      "environment": "Scripting / System",
-                      "header": "OpenSSH & Secure Remote Access"
-                    },
-                    {
-                      "name": "Template — OpenSSH host alias configuration",
-                      "returnType": "snippet",
-                      "signature": "Host alias",
-                      "insertText": "Host robot\n  HostName 192.168.1.50\n  User robot\n  IdentityFile ~/.ssh/id_ed25519\n  IdentitiesOnly yes\n  ServerAliveInterval 30",
-                      "library": "OpenSSH & Secure Remote Access",
-                      "category": "OpenSSH Commands, Keys & Configuration",
-                      "description": "Create a stable SSH alias and explicit identity selection.",
-                      "longDescription": "Create a stable SSH alias and explicit identity selection.\n\nSource: OpenSSH manual pages: https://man.openbsd.org/ssh.1",
-                      "parameters": [],
-                      "symbolKind": "snippet",
-                      "declaration": "Host alias",
                       "environment": "Scripting / System",
                       "header": "OpenSSH & Secure Remote Access"
                     },
@@ -44184,21 +45766,6 @@
                       "header": "OpenSSH & Secure Remote Access"
                     },
                     {
-                      "name": "Recipe — SSH config host alias",
-                      "returnType": "snippet",
-                      "signature": "~/.ssh/config",
-                      "insertText": "Host robot\n  HostName 192.168.1.50\n  User robot\n  IdentityFile ~/.ssh/id_ed25519\n  ServerAliveInterval 30",
-                      "library": "OpenSSH & Secure Remote Access",
-                      "category": "OpenSSH Commands, Keys & Configuration",
-                      "description": "Create a reusable SSH host alias.",
-                      "longDescription": "Create a reusable SSH host alias.\n\nSource: OpenSSH manual pages: https://man.openbsd.org/ssh.1",
-                      "parameters": [],
-                      "symbolKind": "snippet",
-                      "declaration": "~/.ssh/config",
-                      "environment": "Scripting / System",
-                      "header": "OpenSSH & Secure Remote Access"
-                    },
-                    {
                       "name": "Recipe — SSH known hosts inspect",
                       "returnType": "snippet",
                       "signature": "ssh-keygen -F",
@@ -44210,6 +45777,285 @@
                       "parameters": [],
                       "symbolKind": "snippet",
                       "declaration": "ssh-keygen -F",
+                      "environment": "Scripting / System",
+                      "header": "OpenSSH & Secure Remote Access"
+                    },
+                    {
+                      "name": "Template — OpenSSH alias with identity file",
+                      "returnType": "snippet",
+                      "signature": "Template — OpenSSH alias with identity file",
+                      "insertText": "Host {{alias}}\n  HostName {{hostname}}\n  User {{user}}\n  Port {{port}}\n  IdentityFile {{identity}}\n  IdentitiesOnly yes\n  ServerAliveInterval 30",
+                      "library": "OpenSSH & Secure Remote Access",
+                      "category": "OpenSSH Commands, Keys & Configuration",
+                      "description": "Declare a reusable SSH alias bound to one remote hostname, account, port and private key.",
+                      "longDescription": "Declare a reusable SSH alias bound to one remote hostname, account, port and private key.\n\nSource: https://man.openbsd.org/ssh_config\nOfficial reference documentation. Review platform requirements, privileges and generated values before execution.",
+                      "parameters": [
+                        {
+                          "name": "alias",
+                          "type": "SSH alias",
+                          "description": "Short local name used with ssh alias.",
+                          "editorType": "text",
+                          "defaultValue": "myraspi"
+                        },
+                        {
+                          "name": "hostname",
+                          "type": "remote hostname or IP",
+                          "description": "Remote DNS name, local hosts alias or IP address.",
+                          "editorType": "text",
+                          "defaultValue": "raspberrypi"
+                        },
+                        {
+                          "name": "user",
+                          "type": "remote user",
+                          "description": "Remote account name.",
+                          "editorType": "text",
+                          "defaultValue": "pi"
+                        },
+                        {
+                          "name": "port",
+                          "type": "SSH port",
+                          "description": "Remote SSH port.",
+                          "editorType": "text",
+                          "defaultValue": "22"
+                        },
+                        {
+                          "name": "identity",
+                          "type": "private-key file",
+                          "description": "Private key retained on the local client only.",
+                          "editorType": "text",
+                          "defaultValue": "~/.ssh/id_ed25519_myraspi"
+                        }
+                      ],
+                      "symbolKind": "snippet",
+                      "declaration": "Template — OpenSSH alias with identity file",
+                      "environment": "Scripting / System",
+                      "header": "OpenSSH & Secure Remote Access"
+                    },
+                    {
+                      "name": "Recipe — append OpenSSH alias (Bash)",
+                      "returnType": "snippet",
+                      "signature": "Recipe — append OpenSSH alias (Bash)",
+                      "insertText": "mkdir -p ~/.ssh\nchmod 700 ~/.ssh\nprintf '\\nHost %s\\n  HostName %s\\n  User %s\\n  Port %s\\n  IdentityFile %s\\n  IdentitiesOnly yes\\n' \"{{alias}}\" \"{{hostname}}\" \"{{user}}\" \"{{port}}\" \"{{identity}}\" >> ~/.ssh/config\nchmod 600 ~/.ssh/config",
+                      "library": "OpenSSH & Secure Remote Access",
+                      "category": "OpenSSH Commands, Keys & Configuration",
+                      "description": "Append one reusable OpenSSH alias to ~/.ssh/config from Bash. Inspect existing Host blocks first to avoid duplicates.",
+                      "longDescription": "Append one reusable OpenSSH alias to ~/.ssh/config from Bash. Inspect existing Host blocks first to avoid duplicates.\n\nSource: https://man.openbsd.org/ssh_config\nOfficial reference documentation. Review platform requirements, privileges and generated values before execution.",
+                      "parameters": [
+                        {
+                          "name": "alias",
+                          "type": "SSH alias",
+                          "description": "Short local SSH alias.",
+                          "editorType": "text",
+                          "defaultValue": "myraspi"
+                        },
+                        {
+                          "name": "hostname",
+                          "type": "remote hostname or IP",
+                          "description": "Remote DNS name, hosts alias or IP.",
+                          "editorType": "text",
+                          "defaultValue": "raspberrypi"
+                        },
+                        {
+                          "name": "user",
+                          "type": "remote user",
+                          "description": "Remote SSH account.",
+                          "editorType": "text",
+                          "defaultValue": "pi"
+                        },
+                        {
+                          "name": "port",
+                          "type": "SSH port",
+                          "description": "Remote SSH port.",
+                          "editorType": "text",
+                          "defaultValue": "22"
+                        },
+                        {
+                          "name": "identity",
+                          "type": "private-key file",
+                          "description": "Local private-key file.",
+                          "editorType": "text",
+                          "defaultValue": "~/.ssh/id_ed25519_myraspi"
+                        }
+                      ],
+                      "symbolKind": "snippet",
+                      "declaration": "Recipe — append OpenSSH alias (Bash)",
+                      "environment": "Scripting / System",
+                      "header": "OpenSSH & Secure Remote Access"
+                    },
+                    {
+                      "name": "Recipe — append OpenSSH alias (PowerShell)",
+                      "returnType": "snippet",
+                      "signature": "Recipe — append OpenSSH alias (PowerShell)",
+                      "insertText": "$sshDir = Join-Path $HOME \".ssh\"\n$config = Join-Path $sshDir \"config\"\nNew-Item -ItemType Directory -Force -Path $sshDir | Out-Null\n@(\n  \"\"\n  \"Host {{alias}}\"\n  \"  HostName {{hostname}}\"\n  \"  User {{user}}\"\n  \"  Port {{port}}\"\n  \"  IdentityFile {{identity}}\"\n  \"  IdentitiesOnly yes\"\n) | Add-Content -Path $config",
+                      "library": "OpenSSH & Secure Remote Access",
+                      "category": "OpenSSH Commands, Keys & Configuration",
+                      "description": "Append one reusable OpenSSH alias to the current user configuration from PowerShell. Inspect existing Host blocks first to avoid duplicates.",
+                      "longDescription": "Append one reusable OpenSSH alias to the current user configuration from PowerShell. Inspect existing Host blocks first to avoid duplicates.\n\nSource: https://man.openbsd.org/ssh_config\nOfficial reference documentation. Review platform requirements, privileges and generated values before execution.",
+                      "parameters": [
+                        {
+                          "name": "alias",
+                          "type": "SSH alias",
+                          "description": "Short local SSH alias.",
+                          "editorType": "text",
+                          "defaultValue": "myraspi"
+                        },
+                        {
+                          "name": "hostname",
+                          "type": "remote hostname or IP",
+                          "description": "Remote DNS name, hosts alias or IP.",
+                          "editorType": "text",
+                          "defaultValue": "raspberrypi"
+                        },
+                        {
+                          "name": "user",
+                          "type": "remote user",
+                          "description": "Remote SSH account.",
+                          "editorType": "text",
+                          "defaultValue": "pi"
+                        },
+                        {
+                          "name": "port",
+                          "type": "SSH port",
+                          "description": "Remote SSH port.",
+                          "editorType": "text",
+                          "defaultValue": "22"
+                        },
+                        {
+                          "name": "identity",
+                          "type": "private-key file",
+                          "description": "Local private-key file.",
+                          "editorType": "text",
+                          "defaultValue": "~/.ssh/id_ed25519_myraspi"
+                        }
+                      ],
+                      "symbolKind": "snippet",
+                      "declaration": "Recipe — append OpenSSH alias (PowerShell)",
+                      "environment": "Scripting / System",
+                      "header": "OpenSSH & Secure Remote Access"
+                    },
+                    {
+                      "name": "Recipe — remove OpenSSH alias block (PowerShell)",
+                      "returnType": "snippet",
+                      "signature": "Recipe — remove OpenSSH alias block (PowerShell)",
+                      "insertText": "$config = Join-Path $HOME \".ssh/config\"\n$content = Get-Content -Raw -Path $config\n$pattern = \"(?ms)^Host\\s+{{alias}}\\s*$.*?(?=^Host\\s+|\\z)\"\n($content -replace $pattern, \"\").TrimEnd() + \"`n\" | Set-Content -Path $config",
+                      "library": "OpenSSH & Secure Remote Access",
+                      "category": "OpenSSH Commands, Keys & Configuration",
+                      "description": "Remove one Host block from the per-user OpenSSH client configuration. Review the alias and back up the file before execution.",
+                      "longDescription": "Remove one Host block from the per-user OpenSSH client configuration. Review the alias and back up the file before execution.\n\nSource: https://man.openbsd.org/ssh_config\nOfficial reference documentation. Review platform requirements, privileges and generated values before execution.",
+                      "parameters": [
+                        {
+                          "name": "alias",
+                          "type": "SSH alias",
+                          "description": "Exact simple Host alias removed from the config file.",
+                          "editorType": "text",
+                          "defaultValue": "myraspi"
+                        }
+                      ],
+                      "symbolKind": "snippet",
+                      "declaration": "Recipe — remove OpenSSH alias block (PowerShell)",
+                      "environment": "Scripting / System",
+                      "header": "OpenSSH & Secure Remote Access"
+                    },
+                    {
+                      "name": "Recipe — bootstrap SSH alias and Ed25519 key (Bash)",
+                      "returnType": "snippet",
+                      "signature": "Recipe — bootstrap SSH alias and Ed25519 key (Bash)",
+                      "insertText": "ssh-keygen -t ed25519 -f \"{{identity}}\" -C \"{{alias}}\"\nssh-copy-id -i \"{{identity}}.pub\" \"{{user}}@{{hostname}}\"\nprintf '\\nHost %s\\n  HostName %s\\n  User %s\\n  IdentityFile %s\\n  IdentitiesOnly yes\\n' \"{{alias}}\" \"{{hostname}}\" \"{{user}}\" \"{{identity}}\" >> ~/.ssh/config\nssh -G \"{{alias}}\"",
+                      "library": "OpenSSH & Secure Remote Access",
+                      "category": "OpenSSH Commands, Keys & Configuration",
+                      "description": "Generate an Ed25519 client key, deploy only its public half to a remote Linux account, append a local SSH alias and inspect the effective configuration.",
+                      "longDescription": "Generate an Ed25519 client key, deploy only its public half to a remote Linux account, append a local SSH alias and inspect the effective configuration.\n\nSource: https://man.openbsd.org/ssh_config\nOfficial reference documentation. Review platform requirements, privileges and generated values before execution.",
+                      "parameters": [
+                        {
+                          "name": "alias",
+                          "type": "SSH alias",
+                          "description": "Short local SSH alias.",
+                          "editorType": "text",
+                          "defaultValue": "myraspi"
+                        },
+                        {
+                          "name": "hostname",
+                          "type": "remote hostname or IP",
+                          "description": "Remote hostname, hosts alias or IP.",
+                          "editorType": "text",
+                          "defaultValue": "raspberrypi"
+                        },
+                        {
+                          "name": "user",
+                          "type": "remote user",
+                          "description": "Remote SSH account.",
+                          "editorType": "text",
+                          "defaultValue": "pi"
+                        },
+                        {
+                          "name": "identity",
+                          "type": "private-key file",
+                          "description": "New local private-key path. The .pub file is deployed remotely.",
+                          "editorType": "text",
+                          "defaultValue": "~/.ssh/id_ed25519_myraspi"
+                        }
+                      ],
+                      "symbolKind": "snippet",
+                      "declaration": "Recipe — bootstrap SSH alias and Ed25519 key (Bash)",
+                      "environment": "Scripting / System",
+                      "header": "OpenSSH & Secure Remote Access"
+                    },
+                    {
+                      "name": "Recipe — bootstrap SSH alias and Ed25519 key (PowerShell)",
+                      "returnType": "snippet",
+                      "signature": "Recipe — bootstrap SSH alias and Ed25519 key (PowerShell)",
+                      "insertText": "$sshDir = Join-Path $HOME \".ssh\"\n$config = Join-Path $sshDir \"config\"\n$identity = \"{{identity}}\"\nNew-Item -ItemType Directory -Force -Path $sshDir | Out-Null\nssh-keygen -t ed25519 -f $identity -C \"{{alias}}\"\nGet-Content \"$identity.pub\" | ssh \"{{user}}@{{hostname}}\" \"umask 077; mkdir -p ~/.ssh; cat >> ~/.ssh/authorized_keys\"\n@(\n  \"\"\n  \"Host {{alias}}\"\n  \"  HostName {{hostname}}\"\n  \"  User {{user}}\"\n  \"  IdentityFile {{identity}}\"\n  \"  IdentitiesOnly yes\"\n) | Add-Content -Path $config\nssh -G \"{{alias}}\"",
+                      "library": "OpenSSH & Secure Remote Access",
+                      "category": "OpenSSH Commands, Keys & Configuration",
+                      "description": "Generate an Ed25519 client key on Windows or PowerShell, deploy only the public key to a Linux-style remote account, append a local SSH alias and inspect it. The private key stays local.",
+                      "longDescription": "Generate an Ed25519 client key on Windows or PowerShell, deploy only the public key to a Linux-style remote account, append a local SSH alias and inspect it. The private key stays local.\n\nSource: https://learn.microsoft.com/en-us/windows-server/administration/openssh/openssh_keymanagement\nOfficial reference documentation. Review platform requirements, privileges and generated values before execution.",
+                      "parameters": [
+                        {
+                          "name": "alias",
+                          "type": "SSH alias",
+                          "description": "Short local SSH alias.",
+                          "editorType": "text",
+                          "defaultValue": "myraspi"
+                        },
+                        {
+                          "name": "hostname",
+                          "type": "remote hostname or IP",
+                          "description": "Remote hostname, hosts alias or IP.",
+                          "editorType": "text",
+                          "defaultValue": "raspberrypi"
+                        },
+                        {
+                          "name": "user",
+                          "type": "remote user",
+                          "description": "Remote SSH account.",
+                          "editorType": "text",
+                          "defaultValue": "pi"
+                        },
+                        {
+                          "name": "identity",
+                          "type": "private-key file",
+                          "description": "New local private-key path. Keep this file private.",
+                          "editorType": "text",
+                          "defaultValue": "$HOME/.ssh/id_ed25519_myraspi"
+                        }
+                      ],
+                      "symbolKind": "snippet",
+                      "declaration": "Recipe — bootstrap SSH alias and Ed25519 key (PowerShell)",
+                      "environment": "Scripting / System",
+                      "header": "OpenSSH & Secure Remote Access"
+                    },
+                    {
+                      "name": "Reference — local hosts alias versus SSH Host alias",
+                      "returnType": "reference",
+                      "signature": "Reference — local hosts alias versus SSH Host alias",
+                      "insertText": "Local resolver alias:\n  raspberrypi -> 192.168.1.42\n  Windows: %SystemRoot%\\System32\\drivers\\etc\\hosts\n  Linux: /etc/hosts\n\nOpenSSH client alias:\n  Host myraspi\n    HostName raspberrypi\n    User pi\n    IdentityFile ~/.ssh/id_ed25519_myraspi\n\nConnection:\n  ssh myraspi",
+                      "library": "OpenSSH & Secure Remote Access",
+                      "category": "OpenSSH Commands, Keys & Configuration",
+                      "description": "Explain the difference between local name resolution and the richer per-user OpenSSH alias configuration. A hosts entry maps a name to an IP. A Host block can additionally bind the remote account, port and private key.",
+                      "longDescription": "Explain the difference between local name resolution and the richer per-user OpenSSH alias configuration. A hosts entry maps a name to an IP. A Host block can additionally bind the remote account, port and private key.\n\nSource: https://man.openbsd.org/ssh_config\nOfficial reference documentation. Review platform requirements, privileges and generated values before execution.",
+                      "parameters": [],
+                      "symbolKind": "reference",
+                      "declaration": "Reference — local hosts alias versus SSH Host alias",
                       "environment": "Scripting / System",
                       "header": "OpenSSH & Secure Remote Access"
                     }
@@ -45194,7 +47040,8 @@
                   ],
                   "groups": []
                 }
-              ]
+              ],
+              "functions": []
             }
           ]
         },
@@ -49813,5 +51660,5 @@
       ]
     }
   ],
-  "description": "Structured cross-platform scripting, shell, Windows, Linux, Git, OpenSSH, Docker and DevOps command pack with documented parameters, conditional CLI arguments, terminal execution previews and secure SSH login helpers."
+  "description": "Structured cross-platform scripting, shell, Windows, Linux, Git, OpenSSH, Docker and DevOps command pack with documented parameters, conditional CLI arguments, terminal execution previews, environment-path helpers, local host aliases and key-backed OpenSSH aliases."
 }
