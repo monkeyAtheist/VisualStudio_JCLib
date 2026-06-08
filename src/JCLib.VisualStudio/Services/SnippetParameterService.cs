@@ -71,6 +71,26 @@ internal static class SnippetParameterService
             .ToArray();
     }
 
+    public static bool IsEnabled(IReadOnlyList<SnippetParameterValue> values, int index)
+    {
+        if (index < 0 || index >= values.Count) return true;
+        CatalogEnabledWhen? condition = values[index].Parameter.EnabledWhen;
+        if (condition is null) return true;
+        int sourceIndex = condition.Index ?? -1;
+        if (sourceIndex < 0 && !string.IsNullOrWhiteSpace(condition.Parameter))
+        {
+            sourceIndex = values.ToList().FindIndex(value => string.Equals(value.Parameter.Name, condition.Parameter, StringComparison.Ordinal));
+        }
+        if (sourceIndex < 0 || sourceIndex >= values.Count || sourceIndex == index) return true;
+        string sourceValue = (values[sourceIndex].Value ?? string.Empty).Trim();
+        if (condition.NotEmpty && sourceValue.Length == 0) return false;
+        if (condition.Empty && sourceValue.Length != 0) return false;
+        if (!string.IsNullOrEmpty(condition.EqualsValue) && !string.Equals(sourceValue, condition.EqualsValue, StringComparison.Ordinal)) return false;
+        if (!string.IsNullOrEmpty(condition.NotEqualsValue) && string.Equals(sourceValue, condition.NotEqualsValue, StringComparison.Ordinal)) return false;
+        if (condition.Values.Count > 0 && !condition.Values.Contains(sourceValue, StringComparer.Ordinal)) return false;
+        return true;
+    }
+
     public static string BuildInsertText(
         CatalogEntry entry,
         IReadOnlyList<SnippetParameterValue> values,
@@ -79,6 +99,10 @@ internal static class SnippetParameterService
         if (HasParameterizedInsertTemplate(entry))
         {
             string rendered = ApplyParameterizedInsertTemplate(entry, values);
+            if (IsCommand(entry))
+            {
+                return NormalizeCommandText(rendered);
+            }
             if (!entry.IsCallable || !IsSimpleCallableTemplateText(rendered))
             {
                 return rendered;
@@ -95,12 +119,19 @@ internal static class SnippetParameterService
             return FirstNonEmpty(entry.InsertText, entry.Declaration, entry.Signature, entry.Name);
         }
 
+        if (IsCommand(entry))
+        {
+            return NormalizeCommandText(FirstNonEmpty(entry.InsertText, entry.Signature, entry.Name));
+        }
+
         string call = values.Count == 0
             ? $"{entry.Name}()"
-            : $"{entry.Name}({string.Join(", ", values.Select(value =>
-                string.IsNullOrWhiteSpace(value.Value)
-                    ? value.EffectiveDefaultValue
-                    : value.Value.Trim()))})";
+            : $"{entry.Name}({string.Join(", ", values.Select((value, index) =>
+                !IsEnabled(values, index)
+                    ? string.Empty
+                    : string.IsNullOrWhiteSpace(value.Value)
+                        ? value.EffectiveDefaultValue
+                        : value.Value.Trim()))})";
 
         string callableStatement = EnsureStatementTerminator(call, entry);
         if (entry.HasReturnValue && !string.IsNullOrWhiteSpace(returnTarget))
@@ -306,9 +337,11 @@ internal static class SnippetParameterService
         for (int index = 0; index < entry.Parameters.Count; index++)
         {
             CatalogParameter parameter = entry.Parameters[index];
-            string replacement = index < values.Count && !string.IsNullOrWhiteSpace(values[index].Value)
-                ? values[index].Value.Trim()
-                : (index < values.Count ? values[index].EffectiveDefaultValue : (parameter.HasExplicitDefaultValue ? parameter.DefaultValue : InferDefaultValue(parameter.Name, parameter.Type, InferEditorType(parameter))));
+            string replacement = index < values.Count && !IsEnabled(values, index)
+                ? string.Empty
+                : index < values.Count && !string.IsNullOrWhiteSpace(values[index].Value)
+                    ? values[index].Value.Trim()
+                    : (index < values.Count ? values[index].EffectiveDefaultValue : (parameter.HasExplicitDefaultValue ? parameter.DefaultValue : InferDefaultValue(parameter.Name, parameter.Type, InferEditorType(parameter))));
             output = Regex.Replace(output, $@"\{{\{{{Regex.Escape(parameter.Name)}\}}\}}", _ => replacement);
         }
         return output;
@@ -329,6 +362,17 @@ internal static class SnippetParameterService
         if (trimmed.Length == 0 || UsesPythonStatementStyle(entry) || string.Equals(entry.SymbolKind, "command", StringComparison.OrdinalIgnoreCase)) return trimmed.TrimEnd(';');
         return trimmed.EndsWith(";", StringComparison.Ordinal) || trimmed.EndsWith("}", StringComparison.Ordinal) ? trimmed : trimmed + ";";
     }
+
+    private static string NormalizeCommandText(string text)
+    {
+        string trimmed = (text ?? string.Empty).Trim().TrimEnd(';');
+        return trimmed.Contains("\n") || trimmed.Contains("\r")
+            ? trimmed
+            : Regex.Replace(trimmed, @"[ \t]{2,}", " ");
+    }
+
+    private static bool IsCommand(CatalogEntry entry) =>
+        string.Equals((entry.SymbolKind ?? string.Empty).Trim(), "command", StringComparison.OrdinalIgnoreCase);
 
     private static bool UsesPythonStatementStyle(CatalogEntry entry) =>
         $"{entry.Environment} {entry.Library}".IndexOf("python", StringComparison.OrdinalIgnoreCase) >= 0;

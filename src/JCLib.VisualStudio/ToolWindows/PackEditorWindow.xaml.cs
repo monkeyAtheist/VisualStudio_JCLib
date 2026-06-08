@@ -107,8 +107,8 @@ public partial class PackEditorWindow : Window
     {
         PackEditorNode? node = _selectedNode;
         bool hasNode = node is not null;
-        AddEnvironmentButton.IsEnabled = true;
-        AddLibraryButton.IsEnabled = hasNode && FindAncestor(node!, PackEditorNodeKind.Environment) is not null;
+        AddEnvironmentButton.IsEnabled = false;
+        AddLibraryButton.IsEnabled = hasNode && (node!.Kind == PackEditorNodeKind.Pack || FindAncestor(node, PackEditorNodeKind.Environment) is not null || FindAncestor(node, PackEditorNodeKind.Library) is not null);
         AddCategoryButton.IsEnabled = hasNode && FindAncestor(node!, PackEditorNodeKind.Library) is not null;
         AddGroupButton.IsEnabled = hasNode && ResolveContainer(node!) is not null;
         AddElementButton.IsEnabled = hasNode && ResolveContainer(node!) is not null;

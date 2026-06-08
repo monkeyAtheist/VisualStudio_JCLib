@@ -22,6 +22,7 @@ public sealed class PackEditorDocument
     {
         FilePath = Path.GetFullPath(filePath);
         _root = root;
+        NormalizeLibraryFirstInputForEditing(_root);
         RebuildTree();
     }
 
@@ -65,25 +66,18 @@ public sealed class PackEditorDocument
             ["id"] = id.Trim(),
             ["name"] = name.Trim(),
             ["version"] = version.Trim(),
-            ["environments"] = new JArray
+            ["libraries"] = new JArray
             {
                 new JObject
                 {
-                    ["name"] = "Custom",
-                    ["libraries"] = new JArray
+                    ["name"] = "Custom Library",
+                    ["categories"] = new JArray
                     {
                         new JObject
                         {
-                            ["name"] = "Custom Library",
-                            ["categories"] = new JArray
-                            {
-                                new JObject
-                                {
-                                    ["name"] = "General",
-                                    ["functions"] = new JArray(),
-                                    ["groups"] = new JArray(),
-                                },
-                            },
+                            ["name"] = "General",
+                            ["functions"] = new JArray(),
+                            ["groups"] = new JArray(),
                         },
                     },
                 },
@@ -164,9 +158,21 @@ public sealed class PackEditorDocument
 
     public PackEditorNode AddLibrary(PackEditorNode context)
     {
-        PackEditorNode environment = FindContextNode(context, PackEditorNodeKind.Environment)
-            ?? throw new InvalidOperationException("Sélectionne un environnement ou l'un de ses enfants avant d'ajouter une bibliothèque.");
-        JArray libraries = EnsureArray(environment.JsonObject, "libraries");
+        PackEditorNode? environment = FindContextNode(context, PackEditorNodeKind.Environment);
+        JObject environmentJson;
+        if (environment is not null)
+        {
+            environmentJson = environment.JsonObject;
+        }
+        else if (context.Kind == PackEditorNodeKind.Pack && EnumerateObjects(_root, "environments").FirstOrDefault() is JObject rootEnvironment)
+        {
+            environmentJson = rootEnvironment;
+        }
+        else
+        {
+            throw new InvalidOperationException("Sélectionne le pack, une bibliothèque ou l'un de ses enfants avant d'ajouter une bibliothèque.");
+        }
+        JArray libraries = EnsureArray(environmentJson, "libraries");
         string name = FindAvailableName(libraries, "NewLibrary");
         var json = new JObject
         {
@@ -623,7 +629,7 @@ public sealed class PackEditorDocument
     public static bool CanImportPartialNode(PackEditorNode? node)
     {
         return node is not null &&
-            (node.Kind == PackEditorNodeKind.Environment || node.Kind == PackEditorNodeKind.Library ||
+            (node.Kind == PackEditorNodeKind.Pack || node.Kind == PackEditorNodeKind.Environment || node.Kind == PackEditorNodeKind.Library ||
              node.Kind == PackEditorNodeKind.Category || node.Kind == PackEditorNodeKind.Group);
     }
 
@@ -698,6 +704,7 @@ public sealed class PackEditorDocument
         return kind switch
         {
             PackEditorNodeKind.Library when destination.Kind == PackEditorNodeKind.Environment => EnsureArray(destination.JsonObject, "libraries"),
+            PackEditorNodeKind.Library when destination.Kind == PackEditorNodeKind.Pack => EnsureArray(EnumerateObjects(destination.JsonObject, "environments").First(), "libraries"),
             PackEditorNodeKind.Category when destination.Kind == PackEditorNodeKind.Library => EnsureArray(destination.JsonObject, "categories"),
             PackEditorNodeKind.Group when destination.Kind == PackEditorNodeKind.Category || destination.Kind == PackEditorNodeKind.Group => EnsureArray(destination.JsonObject, "groups"),
             _ => throw new InvalidOperationException("Le parent sélectionné n'est pas compatible avec ce type de sous-arbre."),
@@ -709,6 +716,7 @@ public sealed class PackEditorDocument
         return kind switch
         {
             "library" when destination.Kind == PackEditorNodeKind.Environment => EnsureArray(destination.JsonObject, "libraries"),
+            "library" when destination.Kind == PackEditorNodeKind.Pack => EnsureArray(EnumerateObjects(destination.JsonObject, "environments").First(), "libraries"),
             "category" when destination.Kind == PackEditorNodeKind.Library => EnsureArray(destination.JsonObject, "categories"),
             "group" when destination.Kind == PackEditorNodeKind.Category || destination.Kind == PackEditorNodeKind.Group => EnsureArray(destination.JsonObject, "groups"),
             _ => throw new InvalidOperationException($"Le fragment « {kind} » ne peut pas être importé sous « {destination.Kind} »."),
@@ -785,11 +793,50 @@ public sealed class PackEditorDocument
         }
 
         string temporaryPath = FilePath + ".jclib.tmp";
-        File.WriteAllText(temporaryPath, _root.ToString(Formatting.Indented), new UTF8Encoding(encoderShouldEmitUTF8Identifier: false));
+        JObject storageRoot = BuildLibraryFirstStorageRoot();
+        File.WriteAllText(temporaryPath, storageRoot.ToString(Formatting.Indented), new UTF8Encoding(encoderShouldEmitUTF8Identifier: false));
         File.Copy(temporaryPath, FilePath, overwrite: true);
         File.Delete(temporaryPath);
         IsDirty = false;
         RebuildTree();
+    }
+
+    private static bool IsSyntheticRootEnvironment(JObject environment)
+    {
+        string name = ReadString(environment, "name");
+        return string.Equals(name, "General", StringComparison.OrdinalIgnoreCase)
+            || string.Equals(name, "Default", StringComparison.OrdinalIgnoreCase);
+    }
+
+    private static void NormalizeLibraryFirstInputForEditing(JObject root)
+    {
+        if (root["environments"] is JArray existing && existing.Count > 0) return;
+        JArray libraries = root["libraries"] as JArray ?? new JArray();
+        root.Remove("libraries");
+        root["environments"] = new JArray
+        {
+            new JObject
+            {
+                ["name"] = "General",
+                ["libraries"] = libraries,
+            },
+        };
+    }
+
+    private JObject BuildLibraryFirstStorageRoot()
+    {
+        var clone = (JObject)_root.DeepClone();
+        if (clone["environments"] is JArray environments && environments.Count == 1 && environments[0] is JObject environment)
+        {
+            string environmentName = ReadString(environment, "name");
+            if (string.Equals(environmentName, "General", StringComparison.OrdinalIgnoreCase)
+                || string.Equals(environmentName, "Default", StringComparison.OrdinalIgnoreCase))
+            {
+                clone.Remove("environments");
+                clone["libraries"] = environment["libraries"]?.DeepClone() ?? new JArray();
+            }
+        }
+        return clone;
     }
 
     public PackEditorNode? FindNode(JObject jsonObject)
@@ -815,12 +862,16 @@ public sealed class PackEditorDocument
         };
         RootNodes.Add(packNode);
 
-        foreach (JObject environment in EnumerateObjects(_root, "environments"))
+        JObject[] environments = EnumerateObjects(_root, "environments").ToArray();
+        bool libraryFirstMode = environments.Length == 1 && IsSyntheticRootEnvironment(environments[0]);
+        foreach (JObject environment in environments)
         {
-            var environmentNode = CreateNode(environment, PackEditorNodeKind.Environment, packNode, _root["environments"] as JArray);
+            PackEditorNode hierarchyParent = libraryFirstMode
+                ? packNode
+                : CreateNode(environment, PackEditorNodeKind.Environment, packNode, _root["environments"] as JArray);
             foreach (JObject library in EnumerateObjects(environment, "libraries"))
             {
-                var libraryNode = CreateNode(library, PackEditorNodeKind.Library, environmentNode, environment["libraries"] as JArray);
+                var libraryNode = CreateNode(library, PackEditorNodeKind.Library, hierarchyParent, environment["libraries"] as JArray);
                 foreach (JObject category in EnumerateObjects(library, "categories"))
                 {
                     var categoryNode = CreateNode(category, PackEditorNodeKind.Category, libraryNode, library["categories"] as JArray);

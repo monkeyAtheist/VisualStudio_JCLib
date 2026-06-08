@@ -149,8 +149,8 @@ def main() -> int:
     fallback, fallback_stats, fallback_errors = validate_pack(PACK)
     fixture, fixture_stats, fixture_errors = validate_pack(FIXTURE)
     errors += fallback_errors + fixture_errors
-    if fallback.get("version") != "2.05.0":
-        errors.append(f"Bundled default pack version is {fallback.get('version')!r}, expected '2.05.0'")
+    if fallback.get("version") != "2.10.0":
+        errors.append(f"Bundled default pack version is {fallback.get('version')!r}, expected '2.10.0'")
 
     require_source("src/JCLib.VisualStudio/Services/CatalogLoader.cs", [
         "ParseChoices(parameter.Options)",

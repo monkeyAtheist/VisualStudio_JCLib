@@ -13,6 +13,7 @@ internal sealed class StructuredChoiceDialog : Window
     private readonly CatalogPickerConfig _config;
     private readonly ListBox _choicesListBox;
     private readonly TextBox _selectionTextBox;
+    private readonly TextBlock _validationTextBlock;
 
     public StructuredChoiceDialog(CatalogPickerConfig config, string currentValue)
     {
@@ -45,6 +46,14 @@ internal sealed class StructuredChoiceDialog : Window
             TextWrapping = TextWrapping.Wrap,
         };
         bottom.Children.Add(_selectionTextBox);
+        _validationTextBlock = new TextBlock
+        {
+            Foreground = Brushes.IndianRed,
+            FontWeight = FontWeights.SemiBold,
+            Margin = new Thickness(0, 4, 0, 0),
+            TextWrapping = TextWrapping.Wrap,
+        };
+        bottom.Children.Add(_validationTextBlock);
 
         var buttons = new WrapPanel { HorizontalAlignment = HorizontalAlignment.Right, Margin = new Thickness(0, 10, 0, 0) };
         bottom.Children.Add(buttons);
@@ -54,7 +63,13 @@ internal sealed class StructuredChoiceDialog : Window
         var cancelButton = new Button { Content = "Annuler", Padding = new Thickness(12, 4, 12, 4), Margin = new Thickness(0, 0, 6, 0), IsCancel = true };
         buttons.Children.Add(cancelButton);
         var applyButton = new Button { Content = "Appliquer", Padding = new Thickness(12, 4, 12, 4), IsDefault = true };
-        applyButton.Click += (_, _) => { SelectedValue = BuildSelectedValue(); DialogResult = true; };
+        applyButton.Click += (_, _) =>
+        {
+            EnsureMinimumSelectionFallback();
+            SelectedChoice = GetSelectedChoices().FirstOrDefault();
+            SelectedValue = BuildSelectedValue();
+            DialogResult = true;
+        };
         buttons.Children.Add(applyButton);
 
         var heading = new StackPanel { Margin = new Thickness(0, 0, 0, 8) };
@@ -93,7 +108,11 @@ internal sealed class StructuredChoiceDialog : Window
             SelectionMode = config.MultiSelect ? SelectionMode.Multiple : SelectionMode.Single,
             HorizontalContentAlignment = HorizontalAlignment.Stretch,
         };
-        _choicesListBox.SelectionChanged += (_, _) => UpdateSelectionPreview();
+        _choicesListBox.SelectionChanged += (_, _) =>
+        {
+            UpdateCompatibilityState();
+            UpdateSelectionPreview();
+        };
         root.Children.Add(_choicesListBox);
 
         PopulateChoices(config, currentValue ?? string.Empty);
@@ -101,6 +120,8 @@ internal sealed class StructuredChoiceDialog : Window
     }
 
     public string SelectedValue { get; private set; } = string.Empty;
+
+    public CatalogChoice? SelectedChoice { get; private set; }
 
     private void PopulateChoices(CatalogPickerConfig config, string currentValue)
     {
@@ -167,13 +188,16 @@ internal sealed class StructuredChoiceDialog : Window
         return panel;
     }
 
+    private IEnumerable<CatalogChoice> GetSelectedChoices() => _choicesListBox.SelectedItems
+        .OfType<ListBoxItem>()
+        .Select(item => item.Tag as CatalogChoice)
+        .Where(choice => choice is not null)
+        .Select(choice => choice!);
+
     private string BuildSelectedValue()
     {
-        string[] selectedValues = _choicesListBox.SelectedItems
-            .OfType<ListBoxItem>()
-            .Select(item => item.Tag as CatalogChoice)
-            .Where(choice => choice is not null)
-            .Select(choice => choice!.Value)
+        string[] selectedValues = GetSelectedChoices()
+            .Select(choice => choice.Value)
             .ToArray();
         if (selectedValues.Length == 0) return _config.EmptyValue ?? string.Empty;
         if (!_config.MultiSelect) return selectedValues[0];
@@ -186,7 +210,58 @@ internal sealed class StructuredChoiceDialog : Window
             : _config.EmptyValue ?? string.Empty;
     }
 
-    private void UpdateSelectionPreview() => _selectionTextBox.Text = BuildSelectedValue();
+    private void UpdateSelectionPreview()
+    {
+        _selectionTextBox.Text = BuildSelectedValue();
+        bool valid = !_config.MultiSelect || GetSelectedChoices().Count() >= Math.Max(0, _config.MinimumSelections);
+        _validationTextBlock.Text = valid
+            ? string.Empty
+            : string.IsNullOrWhiteSpace(_config.ValidationMessage)
+                ? $"Sélectionne au moins {_config.MinimumSelections} valeur(s). Appliquer restaure la valeur par défaut."
+                : _config.ValidationMessage;
+        foreach (ListBoxItem item in _choicesListBox.Items.OfType<ListBoxItem>().Where(item => item.Tag is CatalogChoice))
+        {
+            item.Foreground = valid ? SystemColors.ControlTextBrush : Brushes.IndianRed;
+        }
+    }
+
+    private void UpdateCompatibilityState()
+    {
+        string[] selectedValues = GetSelectedChoices().Select(choice => choice.Value).Where(value => !string.IsNullOrWhiteSpace(value)).ToArray();
+        foreach (ListBoxItem item in _choicesListBox.Items.OfType<ListBoxItem>().Where(item => item.Tag is CatalogChoice))
+        {
+            if (item.Tag is not CatalogChoice choice) continue;
+            bool incompatible = !item.IsSelected && selectedValues.Any(selected => choice.IncompatibleWith.Contains(selected, StringComparer.Ordinal)
+                || GetChoice(selected)?.IncompatibleWith.Contains(choice.Value, StringComparer.Ordinal) == true);
+            item.IsEnabled = !incompatible;
+            item.Opacity = incompatible ? 0.45 : 1.0;
+        }
+    }
+
+    private CatalogChoice? GetChoice(string value) => _config.FlattenChoices()
+        .FirstOrDefault(choice => string.Equals(choice.Value, value, StringComparison.Ordinal));
+
+    private void EnsureMinimumSelectionFallback()
+    {
+        if (!_config.MultiSelect || GetSelectedChoices().Count() >= Math.Max(0, _config.MinimumSelections)) return;
+        _choicesListBox.UnselectAll();
+        string fallback = string.IsNullOrWhiteSpace(_config.DefaultValue) ? _config.EmptyValue : _config.DefaultValue;
+        var required = new HashSet<string>(SplitValues(fallback ?? string.Empty, _config.ValueSeparator), StringComparer.Ordinal);
+        foreach (ListBoxItem item in _choicesListBox.Items.OfType<ListBoxItem>().Where(item => item.Tag is CatalogChoice))
+        {
+            if (item.Tag is CatalogChoice choice && required.Contains(choice.Value)) item.IsSelected = true;
+        }
+        if (GetSelectedChoices().Count() < Math.Max(0, _config.MinimumSelections))
+        {
+            foreach (ListBoxItem item in _choicesListBox.Items.OfType<ListBoxItem>().Where(item => item.Tag is CatalogChoice && item.IsEnabled))
+            {
+                item.IsSelected = true;
+                if (GetSelectedChoices().Count() >= Math.Max(0, _config.MinimumSelections)) break;
+            }
+        }
+        UpdateCompatibilityState();
+        UpdateSelectionPreview();
+    }
 
     private static IEnumerable<string> SplitValues(string text, string separator)
     {

@@ -31,4 +31,4 @@ if ($null -eq $vsix) {
 }
 
 Write-Host "VSIX généré : $($vsix.FullName)"
-Write-Host "Installe ce VSIX puis exécute docs\MANUAL_TEST_CHECKLIST_1.3.1.md dans l'instance expérimentale Visual Studio 2026."
+Write-Host "Installe ce VSIX puis exécute docs\MANUAL_TEST_CHECKLIST_1.3.6.md dans l'instance expérimentale Visual Studio 2026."

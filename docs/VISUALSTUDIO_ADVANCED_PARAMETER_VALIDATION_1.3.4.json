@@ -1,0 +1,26 @@
+{
+  "status": "ok",
+  "bundled_pack": {
+    "id": "jerrylib",
+    "version": "2.08.0",
+    "functions": 6816,
+    "parameters": 14876,
+    "documented_choices": 3121,
+    "picker_configs": 758,
+    "multi_select_pickers": 201,
+    "path_browsers": 286,
+    "templates": 4168
+  },
+  "advanced_fixture": {
+    "id": "jclib-visualstudio-advanced-parameter-fixture",
+    "version": "1.0.0",
+    "functions": 3,
+    "parameters": 7,
+    "documented_choices": 5,
+    "picker_configs": 3,
+    "multi_select_pickers": 2,
+    "path_browsers": 1,
+    "templates": 3
+  },
+  "errors": []
+}

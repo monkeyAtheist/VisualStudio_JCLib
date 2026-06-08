@@ -4,6 +4,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
@@ -372,8 +373,12 @@ public partial class JCLibToolWindowControl : UserControl
         foreach (CatalogEntry entry in entries.OrderBy(value => value.SourceDisplay).ThenBy(value => value.Path, StringComparer.OrdinalIgnoreCase))
         {
             CatalogNode pack = GetOrAddChild(root, entry.SourceDisplay, CatalogNodeKind.Pack);
-            CatalogNode environment = GetOrAddChild(pack, entry.Environment, CatalogNodeKind.Environment);
-            CatalogNode library = GetOrAddChild(environment, entry.Library, CatalogNodeKind.Library);
+            CatalogNode hierarchyParent = pack;
+            if (!string.IsNullOrWhiteSpace(entry.Environment))
+            {
+                hierarchyParent = GetOrAddChild(pack, entry.Environment, CatalogNodeKind.Environment);
+            }
+            CatalogNode library = GetOrAddChild(hierarchyParent, entry.Library, CatalogNodeKind.Library);
             CatalogNode category = GetOrAddChild(library, entry.Category, CatalogNodeKind.Category);
             CatalogNode parent = category;
             foreach (string group in (entry.Group ?? string.Empty).Split(new[] { " > " }, StringSplitOptions.RemoveEmptyEntries).Select(value => value.Trim()).Where(value => value.Length > 0))
@@ -481,6 +486,7 @@ public partial class JCLibToolWindowControl : UserControl
         CopySnippetButton.IsEnabled = hasSnippet;
         InsertSnippetButton.IsEnabled = hasSnippet;
         QuickInsertSnippetButton.IsEnabled = hasSnippet;
+        ExecuteSnippetButton.IsEnabled = hasSnippet && IsTerminalExecutableEntry(entry);
         StatusText.Text = hasSnippet
             ? "Élément sélectionné. Ajuste les paramètres puis insère le snippet généré ou copie-le."
             : "Élément sélectionné. Aucun snippet n'est défini pour cette entrée.";
@@ -565,7 +571,7 @@ public partial class JCLibToolWindowControl : UserControl
         textBox.TextChanged += OnParameterTextChanged;
         editorGrid.Children.Add(textBox);
 
-        var binding = new ParameterEditorBinding(parameterValue, textBox);
+        var binding = new ParameterEditorBinding(parameterValue, textBox, border);
         textBox.Tag = binding;
         _parameterEditors.Add(binding);
 
@@ -581,6 +587,7 @@ public partial class JCLibToolWindowControl : UserControl
             };
             suggestions.SelectionChanged += OnSuggestionSelectionChanged;
             suggestions.Tag = binding;
+            binding.DependentControls.Add(suggestions);
             Grid.SetColumn(suggestions, 1);
             editorGrid.Children.Add(suggestions);
         }
@@ -597,6 +604,7 @@ public partial class JCLibToolWindowControl : UserControl
                 Tag = binding,
             };
             pickerButton.Click += OnStructuredPickerClick;
+            binding.DependentControls.Add(pickerButton);
             Grid.SetColumn(pickerButton, 2);
             editorGrid.Children.Add(pickerButton);
         }
@@ -612,6 +620,7 @@ public partial class JCLibToolWindowControl : UserControl
                 Tag = binding,
             };
             browseButton.Click += OnBrowseParameterClick;
+            binding.DependentControls.Add(browseButton);
             Grid.SetColumn(browseButton, 3);
             editorGrid.Children.Add(browseButton);
         }
@@ -632,6 +641,8 @@ public partial class JCLibToolWindowControl : UserControl
             binding.ParameterValue.Value = binding.TextBox.Text;
         }
 
+        RefreshConditionalParameterEditors();
+
         SnippetTextBox.Text = SnippetParameterService.BuildInsertText(
             _selectedEntry,
             _parameterValues,
@@ -641,6 +652,16 @@ public partial class JCLibToolWindowControl : UserControl
         CopySnippetButton.IsEnabled = hasSnippet;
         InsertSnippetButton.IsEnabled = hasSnippet;
         QuickInsertSnippetButton.IsEnabled = hasSnippet;
+        ExecuteSnippetButton.IsEnabled = hasSnippet && IsTerminalExecutableEntry(_selectedEntry);
+    }
+
+    private void RefreshConditionalParameterEditors()
+    {
+        for (int index = 0; index < _parameterEditors.Count; index++)
+        {
+            bool enabled = SnippetParameterService.IsEnabled(_parameterValues, index);
+            _parameterEditors[index].SetEnabled(enabled);
+        }
     }
 
     private void ClearPreview()
@@ -661,6 +682,7 @@ public partial class JCLibToolWindowControl : UserControl
         CopySnippetButton.IsEnabled = false;
         InsertSnippetButton.IsEnabled = false;
         QuickInsertSnippetButton.IsEnabled = false;
+        ExecuteSnippetButton.IsEnabled = false;
         FavoriteToggleButton.IsEnabled = false;
         FavoriteToggleButton.Content = "☆ Ajouter aux favoris";
     }
@@ -708,6 +730,133 @@ public partial class JCLibToolWindowControl : UserControl
         catch (Exception ex)
         {
             StatusText.Text = $"Copie impossible : {ex.Message}";
+        }
+    }
+
+    private static bool IsTerminalExecutableEntry(CatalogEntry? entry)
+    {
+        if (entry is null) return false;
+        string kind = (entry.SymbolKind ?? string.Empty).Trim();
+        if (string.Equals(kind, "command", StringComparison.OrdinalIgnoreCase)) return true;
+        return string.Equals((entry.Environment ?? string.Empty).Trim(), "Scripting / System", StringComparison.OrdinalIgnoreCase)
+            && string.Equals(kind, "snippet", StringComparison.OrdinalIgnoreCase);
+    }
+
+    private static bool IsPotentiallyDestructiveTerminalText(string snippet)
+    {
+        string text = (snippet ?? string.Empty).Trim();
+        if (text.Length == 0) return false;
+        return Regex.IsMatch(text,
+            @"(^|[;&|]\s*|\n\s*)(rm\s+-|rmdir\b|del\s+/|erase\b|format\b|diskpart\b|shutdown\b|reboot\b|poweroff\b|taskkill\b|stop-process\b|remove-item\b|docker\s+system\s+prune\b|docker\s+(container|image|volume)\s+rm\b|git\s+reset\s+--hard\b|git\s+clean\s+-|git\s+stash\s+clear\b|git\s+branch\s+-d\b|git\s+worktree\s+remove\b|sc\s+delete\b|reg\s+delete\b|apt\s+remove\b|systemctl\s+(stop|disable|restart)\b)",
+            RegexOptions.IgnoreCase | RegexOptions.CultureInvariant);
+    }
+
+    private static string QuoteProcessArgument(string value)
+    {
+        return "\"" + (value ?? string.Empty).Replace("\\", "\\\\").Replace("\"", "\\\"") + "\"";
+    }
+
+    private static string? FindExecutableOnPath(params string[] candidates)
+    {
+        string[] directories = (Environment.GetEnvironmentVariable("PATH") ?? string.Empty)
+            .Split(new[] { Path.PathSeparator }, StringSplitOptions.RemoveEmptyEntries);
+        foreach (string candidate in candidates)
+        {
+            foreach (string directory in directories)
+            {
+                try
+                {
+                    string path = Path.Combine(directory.Trim(), candidate);
+                    if (File.Exists(path)) return path;
+                }
+                catch
+                {
+                    // Ignore malformed PATH entries and continue searching.
+                }
+            }
+        }
+        return null;
+    }
+
+    private static ProcessStartInfo BuildConsoleStartInfo(CatalogEntry entry, string snippet)
+    {
+        string library = (entry.Library ?? string.Empty).Trim();
+        string workingDirectory = SolutionPathService.TryGetCurrentSolutionDirectory() ?? Environment.CurrentDirectory;
+        if (string.Equals(library, "PowerShell 7", StringComparison.OrdinalIgnoreCase))
+        {
+            string executable = FindExecutableOnPath("pwsh.exe", "powershell.exe") ?? "powershell.exe";
+            return new ProcessStartInfo(executable, "-NoExit -Command " + QuoteProcessArgument(snippet))
+            {
+                UseShellExecute = true,
+                WorkingDirectory = workingDirectory,
+            };
+        }
+
+        if (string.Equals(library, "Bash & POSIX Shell", StringComparison.OrdinalIgnoreCase)
+            || string.Equals(library, "Linux systemd & Administration", StringComparison.OrdinalIgnoreCase))
+        {
+            string? wsl = FindExecutableOnPath("wsl.exe");
+            if (!string.IsNullOrWhiteSpace(wsl))
+            {
+                return new ProcessStartInfo(wsl, "-- bash -lc " + QuoteProcessArgument(snippet + "; exec bash"))
+                {
+                    UseShellExecute = true,
+                    WorkingDirectory = workingDirectory,
+                };
+            }
+            string? bash = FindExecutableOnPath("bash.exe");
+            if (!string.IsNullOrWhiteSpace(bash))
+            {
+                return new ProcessStartInfo(bash, "-lc " + QuoteProcessArgument(snippet + "; exec bash"))
+                {
+                    UseShellExecute = true,
+                    WorkingDirectory = workingDirectory,
+                };
+            }
+        }
+
+        return new ProcessStartInfo("cmd.exe", "/K " + snippet)
+        {
+            UseShellExecute = true,
+            WorkingDirectory = workingDirectory,
+        };
+    }
+
+    private void ExecuteSelectedSnippetInConsole()
+    {
+        string snippet = GetGeneratedSnippet();
+        if (_selectedEntry is null || string.IsNullOrWhiteSpace(snippet))
+        {
+            StatusText.Text = "Aucune commande exécutable n'est sélectionnée.";
+            return;
+        }
+        if (!IsTerminalExecutableEntry(_selectedEntry))
+        {
+            StatusText.Text = "Cette entrée n'est pas une commande console ni une recette Scripting / System.";
+            return;
+        }
+
+        bool requiresConfirmation = snippet.Contains("\n") || IsPotentiallyDestructiveTerminalText(snippet);
+        if (requiresConfirmation)
+        {
+            MessageBoxResult result = MessageBox.Show(
+                Window.GetWindow(this),
+                "Vérifie attentivement la preview avant exécution. La commande sera transmise telle quelle à une console externe.\n\n" + snippet,
+                "JC Lib — confirmer l'exécution",
+                MessageBoxButton.YesNo,
+                MessageBoxImage.Warning);
+            if (result != MessageBoxResult.Yes) return;
+        }
+
+        try
+        {
+            Process.Start(BuildConsoleStartInfo(_selectedEntry, snippet));
+            RecordRecent(_selectedEntry);
+            StatusText.Text = $"Commande « {_selectedEntry.Name} » transmise à une console externe.";
+        }
+        catch (Exception ex)
+        {
+            StatusText.Text = $"Exécution impossible : {ex.Message}";
         }
     }
 
@@ -858,7 +1007,7 @@ public partial class JCLibToolWindowControl : UserControl
     {
         var dialog = new PackCreationDialog(
             "Créer un pack JC Lib",
-            "Un pack de démarrage sera créé avec un environnement, une bibliothèque et une catégorie vides.",
+            "Un pack de démarrage library-first sera créé avec une bibliothèque et une catégorie vides.",
             "jclib.custom.pack",
             "JC Lib Custom Pack",
             "1.0.0",
@@ -1072,6 +1221,11 @@ public partial class JCLibToolWindowControl : UserControl
         CopySelectedSnippet();
     }
 
+    private void OnExecuteSnippetClick(object sender, RoutedEventArgs e)
+    {
+        ExecuteSelectedSnippetInConsole();
+    }
+
     private void OnInsertSnippetClick(object sender, RoutedEventArgs e)
     {
         string snippet = GetGeneratedSnippet();
@@ -1130,6 +1284,15 @@ public partial class JCLibToolWindowControl : UserControl
         if (dialog.ShowDialog() == true)
         {
             binding.TextBox.Text = dialog.SelectedValue;
+            int linkedIndex = config.DefaultTargetIndex;
+            if (config.ApplyDefaultIfEmpty && linkedIndex >= 0 && linkedIndex < _parameterEditors.Count && dialog.SelectedChoice is CatalogChoice selectedChoice && !string.IsNullOrWhiteSpace(selectedChoice.DefaultValue))
+            {
+                TextBox linkedTextBox = _parameterEditors[linkedIndex].TextBox;
+                if (string.IsNullOrWhiteSpace(linkedTextBox.Text))
+                {
+                    linkedTextBox.Text = selectedChoice.DefaultValue;
+                }
+            }
         }
     }
 
@@ -1261,13 +1424,23 @@ public partial class JCLibToolWindowControl : UserControl
 
     private sealed class ParameterEditorBinding
     {
-        public ParameterEditorBinding(SnippetParameterValue parameterValue, TextBox textBox)
+        public ParameterEditorBinding(SnippetParameterValue parameterValue, TextBox textBox, Border container)
         {
             ParameterValue = parameterValue;
             TextBox = textBox;
+            Container = container;
         }
 
         public SnippetParameterValue ParameterValue { get; }
         public TextBox TextBox { get; }
+        public Border Container { get; }
+        public List<Control> DependentControls { get; } = new List<Control>();
+
+        public void SetEnabled(bool enabled)
+        {
+            TextBox.IsEnabled = enabled;
+            foreach (Control control in DependentControls) control.IsEnabled = enabled;
+            Container.Opacity = enabled ? 1.0 : 0.56;
+        }
     }
 }

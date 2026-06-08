@@ -1,0 +1,19 @@
+JC Lib Visual Studio 1.3.4 scaffold validation: OK
+Bundled environments: 7
+Bundled elements: 6816
+Parameterized functions: 5251
+Parameters: 14876
+Editor types: boolean, enum, handle, pathFile, pathFolder, text
+Pack manager UI checks: OK
+Advanced Visual Pack Editor UI checks: OK
+Batch selection, duplication, reordering, parent change and deletion checks: OK
+Tree expansion and selected-node restoration checks: OK
+Subtree move, deep duplication and partial import/export checks: OK
+Pack creation and duplication checks: OK
+Structured parameter editor checks: OK
+Daily UX favorites, recents, filters and persistence checks: OK
+Accessible dark theme, dropdown colors and configurable color checks: OK
+Ctrl+Alt+J keybinding and editor context command checks: OK
+Trailing-whitespace duplicate simulation: OK
+Resolved priority policy simulation: solution > global > bundled: OK
+Optional bundled fallback mode checks: OK

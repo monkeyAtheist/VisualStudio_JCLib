@@ -125,6 +125,7 @@
                         <Button x:Name="InsertSnippetButton" Click="OnInsertSnippetClick" Content="Insérer dans l’éditeur" IsEnabled="False" />
                         <Button x:Name="QuickInsertSnippetButton" Click="OnQuickInsertSelectedClick" Content="Insertion rapide (défauts)" IsEnabled="False" ToolTip="Insérer immédiatement les valeurs par défaut" />
                         <Button x:Name="CopySnippetButton" Click="OnCopySnippetClick" Content="Copier le snippet" IsEnabled="False" />
+                        <Button x:Name="ExecuteSnippetButton" Click="OnExecuteSnippetClick" Content="Exécuter dans une console" IsEnabled="False" ToolTip="Exécuter les cartes de commande et les recettes Scripting / System dans une console externe adaptée" />
                         <Button x:Name="FavoriteToggleButton" Click="OnToggleFavoriteClick" Content="☆ Ajouter aux favoris" IsEnabled="False" />
                     </WrapPanel>
                 </StackPanel></ScrollViewer>

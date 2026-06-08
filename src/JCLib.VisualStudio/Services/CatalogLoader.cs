@@ -296,29 +296,46 @@ public static class CatalogLoader
             $"{packName} — v{packVersion} [{CatalogPackInfo.GetSourceLabel(sourceKind)}]",
             CatalogNodeKind.Pack);
 
-        foreach (EnvironmentDto environment in OrEmpty(pack.Environments))
+        if (OrEmpty(pack.Libraries).Any())
         {
-            string environmentName = Normalize(environment.Name, "Environnement");
-            var environmentNode = new CatalogNode(environmentName, CatalogNodeKind.Environment);
-            packNode.Children.Add(environmentNode);
-
-            foreach (LibraryDto library in OrEmpty(environment.Libraries))
+            foreach (LibraryDto library in OrEmpty(pack.Libraries))
             {
-                string libraryName = Normalize(library.Name, "Bibliothèque");
-                var libraryNode = new CatalogNode(libraryName, CatalogNodeKind.Library);
-                environmentNode.Children.Add(libraryNode);
-
-                foreach (CategoryDto category in OrEmpty(library.Categories))
+                AddVisibleLibrary(library, packNode, entries, packId, packName, packVersion, sourceKind, sourcePath);
+            }
+        }
+        else
+        {
+            foreach (EnvironmentDto environment in OrEmpty(pack.Environments))
+            {
+                string environmentName = Normalize(environment.Name, "Environnement");
+                bool syntheticRoot = string.Equals(environmentName, "General", StringComparison.OrdinalIgnoreCase)
+                    || string.Equals(environmentName, "Default", StringComparison.OrdinalIgnoreCase);
+                if (syntheticRoot)
                 {
-                    string categoryName = Normalize(category.Name, "Catégorie");
-                    var categoryNode = new CatalogNode(categoryName, CatalogNodeKind.Category);
-                    libraryNode.Children.Add(categoryNode);
+                    foreach (LibraryDto library in OrEmpty(environment.Libraries))
+                    {
+                        AddVisibleLibrary(library, packNode, entries, packId, packName, packVersion, sourceKind, sourcePath);
+                    }
+                    continue;
+                }
 
-                    AddFunctions(category.Functions, categoryNode, entries, packId, packName, packVersion,
-                        sourceKind, sourcePath, environmentName, libraryName, categoryName, string.Empty);
-
-                    AddGroups(category.Groups, categoryNode, entries, packId, packName, packVersion,
-                        sourceKind, sourcePath, environmentName, libraryName, categoryName, string.Empty);
+                var visibleLibraryNode = new CatalogNode(environmentName, CatalogNodeKind.Library);
+                packNode.Children.Add(visibleLibraryNode);
+                foreach (LibraryDto nestedLibrary in OrEmpty(environment.Libraries))
+                {
+                    string visibleCategoryName = Normalize(nestedLibrary.Name, "Catégorie");
+                    var visibleCategoryNode = new CatalogNode(visibleCategoryName, CatalogNodeKind.Category);
+                    visibleLibraryNode.Children.Add(visibleCategoryNode);
+                    foreach (CategoryDto legacyCategory in OrEmpty(nestedLibrary.Categories))
+                    {
+                        string groupName = Normalize(legacyCategory.Name, "Groupe");
+                        var groupNode = new CatalogNode(groupName, CatalogNodeKind.Group);
+                        visibleCategoryNode.Children.Add(groupNode);
+                        AddFunctions(legacyCategory.Functions, groupNode, entries, packId, packName, packVersion,
+                            sourceKind, sourcePath, string.Empty, environmentName, visibleCategoryName, groupName);
+                        AddGroups(legacyCategory.Groups, groupNode, entries, packId, packName, packVersion,
+                            sourceKind, sourcePath, string.Empty, environmentName, visibleCategoryName, groupName);
+                    }
                 }
             }
         }
@@ -329,6 +346,31 @@ public static class CatalogLoader
         }
 
         return new CatalogPackInfo(packId, packName, packVersion, sourceKind, sourcePath, packNode, entries, isEnabled);
+    }
+
+    private static void AddVisibleLibrary(
+        LibraryDto library,
+        CatalogNode packNode,
+        ICollection<CatalogEntry> entries,
+        string packId,
+        string packName,
+        string packVersion,
+        CatalogPackSourceKind sourceKind,
+        string sourcePath)
+    {
+        string libraryName = Normalize(library.Name, "Bibliothèque");
+        var libraryNode = new CatalogNode(libraryName, CatalogNodeKind.Library);
+        packNode.Children.Add(libraryNode);
+        foreach (CategoryDto category in OrEmpty(library.Categories))
+        {
+            string categoryName = Normalize(category.Name, "Catégorie");
+            var categoryNode = new CatalogNode(categoryName, CatalogNodeKind.Category);
+            libraryNode.Children.Add(categoryNode);
+            AddFunctions(category.Functions, categoryNode, entries, packId, packName, packVersion,
+                sourceKind, sourcePath, string.Empty, libraryName, categoryName, string.Empty);
+            AddGroups(category.Groups, categoryNode, entries, packId, packName, packVersion,
+                sourceKind, sourcePath, string.Empty, libraryName, categoryName, string.Empty);
+        }
     }
 
     private static (CatalogEntry[] EffectiveEntries, CatalogShadowedEntry[] ShadowedEntries) ResolveEntries(
@@ -384,8 +426,12 @@ public static class CatalogLoader
 
             foreach (CatalogEntry entry in entries)
             {
-                CatalogNode environment = GetOrAddChild(packNode, entry.Environment, CatalogNodeKind.Environment);
-                CatalogNode library = GetOrAddChild(environment, entry.Library, CatalogNodeKind.Library);
+                CatalogNode hierarchyParent = packNode;
+                if (!string.IsNullOrWhiteSpace(entry.Environment))
+                {
+                    hierarchyParent = GetOrAddChild(packNode, entry.Environment, CatalogNodeKind.Environment);
+                }
+                CatalogNode library = GetOrAddChild(hierarchyParent, entry.Library, CatalogNodeKind.Library);
                 CatalogNode category = GetOrAddChild(library, entry.Category, CatalogNodeKind.Category);
                 CatalogNode parent = category;
                 foreach (string groupName in SplitGroupPath(entry.Group))
@@ -528,6 +574,7 @@ public static class CatalogLoader
             Detail = Normalize(item["detail"]?.Value<string>(), string.Empty, trim: false),
             DefaultValue = Normalize(item["defaultValue"]?.Value<string>(), string.Empty, trim: false),
             SourceTypes = ParseStringArray(item["sourceTypes"]),
+            IncompatibleWith = ParseStringArray(item["incompatibleWith"]),
         };
     }
 
@@ -565,6 +612,36 @@ public static class CatalogLoader
             MultiSelect = picker["multiSelect"]?.Value<bool?>() ?? false,
             ValueSeparator = Normalize(picker["valueSeparator"]?.Value<string>(), " | ", trim: false),
             EmptyValue = Normalize(picker["emptyValue"]?.Value<string>(), string.Empty, trim: false),
+            DefaultTargetIndex = picker["defaultTargetIndex"]?.Value<int?>() ?? -1,
+            MinimumSelections = Math.Max(0, picker["minimumSelections"]?.Value<int?>() ?? picker["minSelections"]?.Value<int?>() ?? 0),
+            DefaultValue = Normalize(picker["defaultValue"]?.Value<string>(), string.Empty, trim: false),
+            ValidationMessage = Normalize(picker["validationMessage"]?.Value<string>(), string.Empty, trim: false),
+        };
+    }
+
+    private static CatalogEnabledWhen? ParseEnabledWhen(JToken? token)
+    {
+        if (token is not JObject condition) return null;
+        string parameter = Normalize(condition["parameter"]?.Value<string>() ?? condition["parameterName"]?.Value<string>(), string.Empty);
+        int? index = condition["index"]?.Value<int?>();
+        bool notEmpty = condition["notEmpty"]?.Value<bool?>() ?? false;
+        bool empty = condition["empty"]?.Value<bool?>() ?? false;
+        string equals = Normalize(condition["equals"]?.Value<string>(), string.Empty, trim: false);
+        string notEquals = Normalize(condition["notEquals"]?.Value<string>(), string.Empty, trim: false);
+        IReadOnlyList<string> values = ParseStringArray(condition["values"]);
+        if (string.IsNullOrWhiteSpace(parameter) && index is null && !notEmpty && !empty && string.IsNullOrEmpty(equals) && string.IsNullOrEmpty(notEquals) && values.Count == 0)
+        {
+            return null;
+        }
+        return new CatalogEnabledWhen
+        {
+            Parameter = parameter,
+            Index = index,
+            NotEmpty = notEmpty,
+            Empty = empty,
+            EqualsValue = equals,
+            NotEqualsValue = notEquals,
+            Values = values,
         };
     }
 
@@ -653,6 +730,7 @@ public static class CatalogLoader
                         Presets = ParseChoices(parameter.Presets),
                         Options = ParseChoices(parameter.Options),
                         PickerConfig = ParsePickerConfig(parameter.PickerConfig),
+                        EnabledWhen = ParseEnabledWhen(parameter.EnabledWhen),
                     })
                     .ToArray(),
                 PackId = packId,
@@ -713,6 +791,7 @@ public static class CatalogLoader
         [DataMember(Name = "name")] public string? Name { get; set; }
         [DataMember(Name = "version")] public string? Version { get; set; }
         [DataMember(Name = "environments")] public List<EnvironmentDto>? Environments { get; set; }
+        [DataMember(Name = "libraries")] public List<LibraryDto>? Libraries { get; set; }
     }
 
     [DataContract]
@@ -776,5 +855,6 @@ public static class CatalogLoader
         [DataMember(Name = "presets")] public JToken? Presets { get; set; }
         [DataMember(Name = "options")] public JToken? Options { get; set; }
         [DataMember(Name = "pickerConfig")] public JToken? PickerConfig { get; set; }
+        [DataMember(Name = "enabledWhen")] public JToken? EnabledWhen { get; set; }
     }
 }

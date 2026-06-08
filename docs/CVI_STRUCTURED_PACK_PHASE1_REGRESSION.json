@@ -1,0 +1,146 @@
+{
+  "status": "ok",
+  "vscode": {
+    "extension_version": "0.7.61",
+    "default_pack_version": "2.06.0",
+    "cvi_pack_version": "1.1.0",
+    "distributed_json_files": 21,
+    "audit_errors": {},
+    "runtime_routes": [
+      {
+        "id": "cvi_core",
+        "label": "LabWindows/CVI structured API pack",
+        "cards": 1977,
+        "libraries": 19,
+        "hasCvi": true,
+        "sampleLibraries": [
+          "User interface",
+          "CVI Patterns & References",
+          "Advanced Analysis library",
+          "NI-DAQmx",
+          "VXI",
+          "GPIB - 488.2",
+          "RS232",
+          "VISA"
+        ]
+      },
+      {
+        "id": "c_all",
+        "label": "All C pack",
+        "cards": 2903,
+        "libraries": 21,
+        "hasCvi": true,
+        "sampleLibraries": [
+          "C Language",
+          "C DLL Helpers",
+          "User interface",
+          "CVI Patterns & References",
+          "Advanced Analysis library",
+          "NI-DAQmx",
+          "VXI",
+          "GPIB - 488.2"
+        ]
+      },
+      {
+        "id": "all_packs",
+        "label": "All packs",
+        "cards": 14107,
+        "libraries": 142,
+        "hasCvi": true,
+        "sampleLibraries": [
+          "C Language",
+          "C DLL Helpers",
+          "User interface",
+          "CVI Patterns & References",
+          "Advanced Analysis library",
+          "NI-DAQmx",
+          "VXI",
+          "GPIB - 488.2"
+        ]
+      }
+    ],
+    "runtime_artifact_parity": true,
+    "javascript_syntax": "ok"
+  },
+  "cvi_pack": {
+    "packVersion": "1.1.0",
+    "libraries": 19,
+    "cards": 1977,
+    "functions": 1967,
+    "references": 6,
+    "snippets": 4,
+    "parameters": 7541,
+    "documentedParameters": 7541,
+    "structuredPickers": 102,
+    "multiSelectPickers": 1,
+    "fileBrowsers": 83,
+    "folderBrowsers": 12,
+    "emptyLibraries": [],
+    "emptyCategories": [],
+    "missingDescriptions": [],
+    "missingParameterDescriptions": [],
+    "unresolvedPlaceholders": [],
+    "duplicateExactCards": []
+  },
+  "visual_studio": {
+    "source_version": "1.3.2",
+    "bundled_validation": {
+      "status": "ok",
+      "bundled_pack": {
+        "id": "jerrylib",
+        "version": "2.06.0",
+        "functions": 6816,
+        "parameters": 14876,
+        "documented_choices": 3121,
+        "picker_configs": 758,
+        "multi_select_pickers": 201,
+        "path_browsers": 286,
+        "templates": 4168
+      },
+      "advanced_fixture": {
+        "id": "jclib-visualstudio-advanced-parameter-fixture",
+        "version": "1.0.0",
+        "functions": 3,
+        "parameters": 7,
+        "documented_choices": 5,
+        "picker_configs": 3,
+        "multi_select_pickers": 2,
+        "path_browsers": 1,
+        "templates": 3
+      },
+      "errors": []
+    },
+    "external_catalog_validation": {
+      "status": "ok",
+      "files": 21,
+      "aggregate": {
+        "documented_choices": 22324,
+        "editor_type:<none>": 12381,
+        "editor_type:boolean": 615,
+        "editor_type:enum": 2214,
+        "editor_type:handle": 1920,
+        "editor_type:pathFile": 793,
+        "editor_type:pathFolder": 247,
+        "editor_type:text": 22385,
+        "explicit_empty_choices": 104,
+        "functions": 21017,
+        "multi_select_pickers": 652,
+        "parameterized_templates": 12208,
+        "parameters": 40555,
+        "path_browsers": 1040,
+        "picker_configs": 2492,
+        "simple_choices": 666
+      },
+      "errors": []
+    },
+    "msbuild_executed": false
+  },
+  "source_headers": {
+    "cvi_2012_bundle": "supplied by user",
+    "advanced_analysis_header": "CVI2020 supplemental advanlys.h because CVI2012 bundle does not include it",
+    "external_driver_sections": [
+      "NI-DAQmx",
+      "NI-VISA"
+    ]
+  }
+}

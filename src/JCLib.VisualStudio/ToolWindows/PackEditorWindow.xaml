@@ -72,7 +72,7 @@
         </Grid.RowDefinitions>
 
         <StackPanel Grid.Row="0">
-            <TextBlock FontSize="19" FontWeight="SemiBold" Text="JC Lib — Visual Pack Editor avancé 1.3.1" />
+            <TextBlock FontSize="19" FontWeight="SemiBold" Text="JC Lib — Visual Pack Editor avancé 1.3.7" />
             <TextBlock x:Name="PackFilePathText" Margin="0,3,0,0" Foreground="{DynamicResource SecondaryTextBrush}" TextWrapping="Wrap" />
         </StackPanel>
 
@@ -112,7 +112,7 @@
                     <TreeView x:Name="EditorTreeView" Grid.Row="1" SelectedItemChanged="OnEditorTreeSelectionChanged" />
                     <StackPanel Grid.Row="2" Margin="0,7,0,0">
                         <WrapPanel>
-                            <Button x:Name="AddEnvironmentButton" Click="OnAddEnvironmentClick" Content="+ Environnement" />
+                            <Button x:Name="AddEnvironmentButton" Click="OnAddEnvironmentClick" Content="+ Environnement" Visibility="Collapsed" />
                             <Button x:Name="AddLibraryButton" Click="OnAddLibraryClick" Content="+ Bibliothèque" IsEnabled="False" />
                             <Button x:Name="AddCategoryButton" Click="OnAddCategoryClick" Content="+ Catégorie" IsEnabled="False" />
                             <Button x:Name="AddGroupButton" Click="OnAddGroupClick" Content="+ Groupe" IsEnabled="False" />
@@ -162,7 +162,7 @@
                             <TextBlock Margin="0,0,0,3" FontWeight="SemiBold" Text="Nom du nœud" />
                             <TextBox x:Name="NodeNameTextBox" TextChanged="OnNodeNameChanged" />
                             <TextBlock Margin="0,5,0,10" Foreground="{DynamicResource SecondaryTextBrush}"
-                                       Text="Le renommage s'applique aux environnements, bibliothèques, catégories et groupes." TextWrapping="Wrap" />
+                                       Text="Le renommage s'applique aux bibliothèques, catégories et groupes." TextWrapping="Wrap" />
                         </StackPanel>
 
                         <StackPanel x:Name="ElementFieldsPanel" Visibility="Collapsed">

@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Validate JC Lib VS Code catalogs against the Visual Studio 1.3.1 importer contract."""
+"""Validate JC Lib VS Code catalogs against the Visual Studio 1.3.6 importer contract."""
 from __future__ import annotations
 
 import argparse
@@ -76,6 +76,10 @@ def validate_picker(picker, path: str, errors: list[str], stats: Counter):
         errors.append(f"{path}.emptyValue: must be a string")
     if "applyDefaultIfEmpty" in picker and not isinstance(picker.get("applyDefaultIfEmpty"), bool):
         errors.append(f"{path}.applyDefaultIfEmpty: must be a boolean")
+    if "defaultTargetIndex" in picker and not isinstance(picker.get("defaultTargetIndex"), int):
+        errors.append(f"{path}.defaultTargetIndex: must be an integer")
+    if "defaultTargetIndex" in picker:
+        stats["picker_default_target_indexes"] += 1
     source_types = picker.get("sourceTypes", picker.get("controlTypes"))
     if source_types is not None and (not isinstance(source_types, list) or any(not isinstance(v, str) for v in source_types)):
         errors.append(f"{path}.sourceTypes: must be an array of strings")
@@ -100,6 +104,33 @@ def validate_picker(picker, path: str, errors: list[str], stats: Counter):
                 errors.append(f"{group_path}: group must be an object")
                 continue
             validate_choices(group.get("items", []), f"{group_path}.items", errors, stats)
+
+
+def validate_enabled_when(condition, path: str, parameter_names: set[str], parameter_count: int, errors: list[str], stats: Counter):
+    if condition is None:
+        return
+    if not isinstance(condition, dict):
+        errors.append(f"{path}: enabledWhen must be an object")
+        return
+    stats["conditional_parameters"] += 1
+    parameter = condition.get("parameter", condition.get("parameterName"))
+    index = condition.get("index")
+    if parameter is not None and not isinstance(parameter, str):
+        errors.append(f"{path}.parameter: must be a string")
+    if isinstance(parameter, str) and parameter and parameter not in parameter_names:
+        errors.append(f"{path}.parameter: unknown referenced parameter {parameter!r}")
+    if index is not None and not isinstance(index, int):
+        errors.append(f"{path}.index: must be an integer")
+    if isinstance(index, int) and not (0 <= index < parameter_count):
+        errors.append(f"{path}.index: out of range")
+    for flag in ("notEmpty", "empty"):
+        if flag in condition and not isinstance(condition.get(flag), bool):
+            errors.append(f"{path}.{flag}: must be a boolean")
+    for field in ("equals", "notEquals"):
+        if field in condition and not isinstance(condition.get(field), str):
+            errors.append(f"{path}.{field}: must be a string")
+    if "values" in condition and (not isinstance(condition.get("values"), list) or any(not isinstance(v, str) for v in condition.get("values"))):
+        errors.append(f"{path}.values: must be an array of strings")
 
 
 def validate_pack(path: Path) -> dict:
@@ -142,6 +173,9 @@ def validate_pack(path: Path) -> dict:
             validate_choices(parameter.get("presets"), f"{parameter_path}.presets", errors, stats)
             if "pickerConfig" in parameter:
                 validate_picker(parameter.get("pickerConfig"), f"{parameter_path}.pickerConfig", errors, stats)
+        for parameter_index, parameter in enumerate(parameters):
+            if isinstance(parameter, dict) and "enabledWhen" in parameter:
+                validate_enabled_when(parameter.get("enabledWhen"), f"function[{function_index}] {function.get('name')}.parameters[{parameter_index}].enabledWhen", param_names, len(parameters), errors, stats)
         insert_text = str(function.get("insertText") or "")
         placeholders = set(PLACEHOLDER_RE.findall(insert_text))
         if placeholders:

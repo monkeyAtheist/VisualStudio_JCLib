@@ -1,0 +1,17 @@
+{
+  "status": "ok",
+  "pack_version": "1.2.1",
+  "cards": 98,
+  "commands_checked": [
+    "gcc compile executable",
+    "gcc compile object",
+    "gcc shared library",
+    "g++ compile executable",
+    "g++ shared library",
+    "clang++ compile C++ executable",
+    "MinGW gcc executable",
+    "MinGW g++ executable",
+    "MinGW DLL import library"
+  ],
+  "errors": []
+}

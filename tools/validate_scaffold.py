@@ -106,6 +106,7 @@ def main() -> int:
     appearance_code_text = require(PROJECT / "ToolWindows" / "AppearanceDialog.xaml.cs")
     models_text = require(PROJECT / "Models" / "CatalogModels.cs")
     pack_text = require(PROJECT / "Assets" / "Packs" / "default_pack.json")
+    build_pack_text = require(PROJECT / "Assets" / "Packs" / "build_pack.json")
     sample_text = require(ROOT / "docs" / "example_packs" / "jclib_sample_pack.json")
     fragment_text = require(ROOT / "docs" / "example_fragments" / "jclib_sample_group.jclib-fragment.json")
 
@@ -118,6 +119,7 @@ def main() -> int:
     ET.fromstring(move_target_xaml_text)
     ET.fromstring(appearance_xaml_text)
     pack = json.loads(pack_text)
+    build_pack = json.loads(build_pack_text)
     sample_pack = json.loads(sample_text)
     sample_fragment = json.loads(fragment_text)
 
@@ -127,11 +129,26 @@ def main() -> int:
     assert '<Reference Include="System.Windows.Forms" />' in csproj_text
     assert '<PackageReference Include="Newtonsoft.Json" Version="13.0.3" />' in csproj_text
     assert 'System.Web.Extensions' not in csproj_text
+    assert 'CatalogEnabledWhen' in models_text
+    assert 'DefaultTargetIndex' in models_text
+    assert 'ParseEnabledWhen' in loader_text
+    assert 'public static bool IsEnabled' in parameter_service_text
+    assert 'NormalizeCommandText' in parameter_service_text
+    assert 'IsCommand(entry)' in parameter_service_text
+    assert '!string.Equals((SymbolKind ?? string.Empty).Trim(), "command"' in models_text
     assert '<ResourceName>Menus.ctmenu</ResourceName>' in csproj_text
     assert '<LogicalName>JCLib.VisualStudio.Assets.Packs.default_pack.json</LogicalName>' in csproj_text
+    assert 'Assets\\Packs\\build_pack.json' in csproj_text
     assert '[ProvideMenuResource("Menus.ctmenu", 1)]' in package_text
-    assert '"1.3.1"' in package_text
-    assert 'Version="1.3.1"' in manifest_text
+    assert '"1.3.6"' in package_text
+    assert 'Version="1.3.6"' in manifest_text
+    assert pack.get('version') == '2.10.0'
+    assert build_pack.get('version') == '1.2.3'
+    assert 'DialogResult = true;' in (ROOT / 'src/JCLib.VisualStudio/ToolWindows/StructuredChoiceDialog.cs').read_text(encoding='utf-8')
+    assert '{{includePathPrefix}} {{includeDirectory}}' in json.dumps(build_pack)
+    assert '{{libraryPathPrefix}} {{libraryDirectory}}' in json.dumps(build_pack)
+    assert '{{includePathPrefix}}{{includeDirectory}}' not in json.dumps(build_pack)
+    assert '{{libraryPathPrefix}}{{libraryDirectory}}' not in json.dumps(build_pack)
     assert '<ProductArchitecture>amd64</ProductArchitecture>' in manifest_text
     assert '<ProductArchitecture>arm64</ProductArchitecture>' in manifest_text
     assert 'IDG_VS_WNDO_OTRWNDWS1' in vsct_text
@@ -164,6 +181,7 @@ def main() -> int:
         'UserPreferencesStore.Load', 'ThemeService.ApplyTheme', 'RefreshQuickAccessLists',
         'PopulateFilters', 'RefreshNavigationTree', 'OnToggleFavoriteClick', 'QuickInsertEntry',
         'OnAppearanceClick', 'OnEnvironmentFilterChanged', 'OnLibraryFilterChanged', 'OnIncludeBundledPackChanged',
+        'RefreshConditionalParameterEditors', 'SnippetParameterService.IsEnabled', 'DefaultTargetIndex',
     ]:
         assert required in codebehind_text, required
 
@@ -403,7 +421,7 @@ def main() -> int:
     assert [group['name'] for group in category_destination['groups']] == ['Diagnostics Copy', 'Diagnostics Copy2']
     assert imported['functions'][0]['parameters'][0]['name'] == 'message'
 
-    print('JC Lib Visual Studio 1.3.1 scaffold validation: OK')
+    print('JC Lib Visual Studio 1.3.6 scaffold validation: OK')
     print(f'Bundled environments: {environment_count}')
     print(f'Bundled elements: {symbol_count}')
     print(f'Parameterized functions: {parameterized_functions}')

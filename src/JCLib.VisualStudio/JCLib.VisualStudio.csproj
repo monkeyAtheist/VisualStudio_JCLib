@@ -50,6 +50,25 @@
       <IncludeInVSIX>true</IncludeInVSIX>
     </Content>
 
+    <!-- Standalone CVI catalog: also distributed beside the fallback for direct inspection and future targeted imports. -->
+    <Content Include="Assets\Packs\cvi_pack.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <IncludeInVSIX>true</IncludeInVSIX>
+    </Content>
+
+    <!-- Standalone Build catalog with conditional -I and -L folder parameters. -->
+    <Content Include="Assets\Packs\build_pack.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <IncludeInVSIX>true</IncludeInVSIX>
+    </Content>
+
+    <!-- Standalone Scripting/System catalog exported by the VS Code extension.
+         Included for explicit import and compatibility checks; Visual Studio does not generate integrated packs. -->
+    <Content Include="Assets\Packs\system_scripting_pack.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <IncludeInVSIX>true</IncludeInVSIX>
+    </Content>
+
     <!-- Embedded fallback: the first read-only browser does not depend on the
          final installation layout of the VSIX content files. -->
     <EmbeddedResource Include="Assets\Packs\default_pack.json">

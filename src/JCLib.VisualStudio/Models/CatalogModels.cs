@@ -85,6 +85,8 @@ public sealed class CatalogChoice
 
     public IReadOnlyList<string> SourceTypes { get; set; } = Array.Empty<string>();
 
+    public IReadOnlyList<string> IncompatibleWith { get; set; } = Array.Empty<string>();
+
     public string DisplayLabel => string.IsNullOrWhiteSpace(Value) && !string.IsNullOrWhiteSpace(Label)
         ? Label
         : string.IsNullOrWhiteSpace(Label) || string.Equals(Label, Value, StringComparison.Ordinal)
@@ -133,6 +135,14 @@ public sealed class CatalogPickerConfig
 
     public string EmptyValue { get; set; } = string.Empty;
 
+    public int DefaultTargetIndex { get; set; } = -1;
+
+    public int MinimumSelections { get; set; }
+
+    public string DefaultValue { get; set; } = string.Empty;
+
+    public string ValidationMessage { get; set; } = string.Empty;
+
     public IReadOnlyList<CatalogChoice> FlattenChoices() => Sections
         .SelectMany(section => section.Groups)
         .SelectMany(group => group.Items)
@@ -140,6 +150,23 @@ public sealed class CatalogPickerConfig
         .GroupBy(item => item.Value, StringComparer.Ordinal)
         .Select(group => group.First())
         .ToArray();
+}
+
+public sealed class CatalogEnabledWhen
+{
+    public string Parameter { get; set; } = string.Empty;
+
+    public int? Index { get; set; }
+
+    public bool NotEmpty { get; set; }
+
+    public bool Empty { get; set; }
+
+    public string EqualsValue { get; set; } = string.Empty;
+
+    public string NotEqualsValue { get; set; } = string.Empty;
+
+    public IReadOnlyList<string> Values { get; set; } = Array.Empty<string>();
 }
 
 public sealed class CatalogParameter
@@ -165,6 +192,8 @@ public sealed class CatalogParameter
     public IReadOnlyList<CatalogChoice> Options { get; set; } = Array.Empty<CatalogChoice>();
 
     public CatalogPickerConfig? PickerConfig { get; set; }
+
+    public CatalogEnabledWhen? EnabledWhen { get; set; }
 }
 
 public sealed class CatalogEntry
@@ -214,6 +243,7 @@ public sealed class CatalogEntry
     public bool IsFunction => IsCallable;
 
     public bool HasReturnValue => IsCallable &&
+        !string.Equals((SymbolKind ?? string.Empty).Trim(), "command", StringComparison.OrdinalIgnoreCase) &&
         !string.IsNullOrWhiteSpace(ReturnType) &&
         !string.Equals(ReturnType.Trim(), "void", StringComparison.OrdinalIgnoreCase) &&
         !string.Equals(ReturnType.Trim(), "none", StringComparison.OrdinalIgnoreCase) &&
