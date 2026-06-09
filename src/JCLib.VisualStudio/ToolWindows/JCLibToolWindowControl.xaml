@@ -118,6 +118,7 @@
                 <TextBlock x:Name="CatalogSummaryText" Margin="0,3,0,0" Foreground="{DynamicResource SecondaryTextBrush}" Text="Chargement des catalogues..." />
             </StackPanel>
             <WrapPanel Grid.Column="1" Margin="8,0,0,0">
+                <Button Click="OnFindSymbolClick" Content="Find Symbol" ToolTip="Rechercher un symbole dans les packs — raccourci Ctrl+Alt+P" />
                 <Button Click="OnAppearanceClick" Content="Apparence" ToolTip="Configurer les couleurs de JC Lib" />
                 <Button Click="OnReloadCatalogClick" Content="Recharger" />
             </WrapPanel>

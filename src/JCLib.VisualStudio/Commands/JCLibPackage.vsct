@@ -16,6 +16,10 @@
         <Parent guid="guidSHLMainMenu" id="IDG_VS_WNDO_OTRWNDWS1" />
         <Strings><ButtonText>JC Lib</ButtonText></Strings>
       </Button>
+      <Button guid="guidJCLibCommandSet" id="cmdidFindSymbol" priority="0x0110" type="Button">
+        <Parent guid="guidSHLMainMenu" id="IDG_VS_WNDO_OTRWNDWS1" />
+        <Strings><ButtonText>JC Lib — Find Symbol</ButtonText></Strings>
+      </Button>
     </Buttons>
   </Commands>
 
@@ -23,17 +27,22 @@
     <CommandPlacement guid="guidJCLibCommandSet" id="cmdidShowJCLibToolWindow" priority="0x0600">
       <Parent guid="guidJCLibCommandSet" id="grpJCLibCodeContext" />
     </CommandPlacement>
+    <CommandPlacement guid="guidJCLibCommandSet" id="cmdidFindSymbol" priority="0x0610">
+      <Parent guid="guidJCLibCommandSet" id="grpJCLibCodeContext" />
+    </CommandPlacement>
   </CommandPlacements>
 
   <KeyBindings>
     <!-- Global default shortcut. It remains user-overridable from Tools > Options > Environment > Keyboard. -->
     <KeyBinding guid="guidJCLibCommandSet" id="cmdidShowJCLibToolWindow" editor="guidVSStd97" key1="J" mod1="CONTROL" mod2="ALT" />
+    <KeyBinding guid="guidJCLibCommandSet" id="cmdidFindSymbol" editor="guidVSStd97" key1="P" mod1="CONTROL" mod2="ALT" />
   </KeyBindings>
 
   <Symbols>
     <GuidSymbol name="guidJCLibPackage" value="{6f22038e-dc48-46db-9f71-b3553a5ec9be}" />
     <GuidSymbol name="guidJCLibCommandSet" value="{6371953d-2183-42f5-91d4-3086ff77c11f}">
       <IDSymbol name="cmdidShowJCLibToolWindow" value="0x0100" />
+      <IDSymbol name="cmdidFindSymbol" value="0x0101" />
       <IDSymbol name="grpJCLibCodeContext" value="0x0200" />
     </GuidSymbol>
   </Symbols>

@@ -1,0 +1,13 @@
+{
+  "version": "1.3.12",
+  "scope": "Visual Studio 2026 WPF source update",
+  "features": [
+    "Global configurable Ctrl+Alt+P shortcut",
+    "Standalone WPF Find Symbol dialog",
+    "Direct query text focus",
+    "Empty results and hidden preview before first query",
+    "Current Web 2.0.0, C 1.12.0, C++ 2.16.0 and Win32 1.9.0 catalog synchronization"
+  ],
+  "integratedPackGeneration": "absent by design; remains VS Code only",
+  "compiledVsix": "not produced in Linux environment"
+}

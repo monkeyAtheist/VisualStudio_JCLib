@@ -10,7 +10,7 @@ using Task = System.Threading.Tasks.Task;
 namespace JCLib.VisualStudio;
 
 [PackageRegistration(UseManagedResourcesOnly = true, AllowsBackgroundLoading = true)]
-[InstalledProductRegistration("JC Lib - Visual Studio", "JC Lib browser with visual hierarchy badges, structured parameters, documented options, multi-select pickers, file browsers, external packs and WPF Visual Pack Editor", "1.3.11")]
+[InstalledProductRegistration("JC Lib - Visual Studio", "JC Lib browser with visual hierarchy badges, structured parameters, documented options, multi-select pickers, file browsers, external packs and WPF Visual Pack Editor", "1.3.12")]
 [ProvideMenuResource("Menus.ctmenu", 1)]
 [ProvideToolWindow(typeof(JCLibToolWindow), Style = VsDockStyle.Tabbed, Window = ToolWindowGuids80.SolutionExplorer)]
 [Guid(PackageGuids.PackageString)]
@@ -30,6 +30,9 @@ public sealed class JCLibPackage : AsyncPackage
 
         var commandId = new CommandID(PackageGuids.CommandSet, PackageIds.ShowJCLibToolWindow);
         commandService.AddCommand(new MenuCommand(ExecuteShowToolWindow, commandId));
+
+        var findSymbolCommandId = new CommandID(PackageGuids.CommandSet, PackageIds.FindSymbol);
+        commandService.AddCommand(new MenuCommand(ExecuteFindSymbol, findSymbolCommandId));
     }
 
     private void ExecuteShowToolWindow(object? sender, EventArgs e)
@@ -57,4 +60,32 @@ public sealed class JCLibPackage : AsyncPackage
             }
         });
     }
+    private void ExecuteFindSymbol(object? sender, EventArgs e)
+    {
+        ThreadHelper.ThrowIfNotOnUIThread();
+
+        _ = JoinableTaskFactory.RunAsync(async delegate
+        {
+            try
+            {
+                ToolWindowPane? window = await ShowToolWindowAsync(
+                    typeof(JCLibToolWindow),
+                    id: 0,
+                    create: true,
+                    cancellationToken: DisposalToken);
+
+                if (window?.Content is not JCLibToolWindowControl control)
+                {
+                    throw new InvalidOperationException("The JC Lib Tool Window could not open Find Symbol.");
+                }
+
+                control.Dispatcher.BeginInvoke(new Action(control.OpenFindSymbolDialog));
+            }
+            catch (Exception ex)
+            {
+                ActivityLog.LogError(nameof(JCLibPackage), ex.ToString());
+            }
+        });
+    }
+
 }

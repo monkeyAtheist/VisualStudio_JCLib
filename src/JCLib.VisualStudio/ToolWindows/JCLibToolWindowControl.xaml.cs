@@ -49,6 +49,28 @@ public partial class JCLibToolWindowControl : UserControl
         Unloaded += OnControlUnloaded;
     }
 
+    public void OpenFindSymbolDialog()
+    {
+        if (_catalog is null)
+        {
+            LoadCatalog();
+        }
+
+        IReadOnlyList<CatalogEntry> entries = _catalog?.Entries ?? Array.Empty<CatalogEntry>();
+        var dialog = new FindSymbolDialog(entries, _preferences.Theme);
+        Window? owner = Window.GetWindow(this);
+        if (owner is not null) dialog.Owner = owner;
+
+        bool? accepted = dialog.ShowDialog();
+        if (accepted != true || dialog.SelectedEntry is null) return;
+
+        // The modal picker is independent from the persistent inline filter.
+        // Opening a symbol must return to the normal tree and reveal its preview.
+        SearchTextBox.Clear();
+        ShowEntry(dialog.SelectedEntry);
+        SelectTreeEntry(dialog.SelectedEntry.CanonicalPath);
+    }
+
     private void OnControlLoaded(object sender, RoutedEventArgs e)
     {
         if (!_initialCatalogLoaded)
@@ -1346,6 +1368,11 @@ public partial class JCLibToolWindowControl : UserControl
         BuildParameterEditor(_selectedEntry);
         RefreshGeneratedSnippet();
         StatusText.Text = "Paramètres réinitialisés à partir du snippet du catalogue.";
+    }
+
+    private void OnFindSymbolClick(object sender, RoutedEventArgs e)
+    {
+        OpenFindSymbolDialog();
     }
 
     private void OnAppearanceClick(object sender, RoutedEventArgs e)

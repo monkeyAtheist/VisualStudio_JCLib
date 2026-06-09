@@ -1,3 +1,9 @@
+## Version 1.3.12 — Find Symbol global et saisie immédiate
+
+- Ajoute la fenêtre WPF `Find Symbol`, vide à l’ouverture et focalisée directement sur la zone de saisie.
+- Ajoute le raccourci global configurable `Ctrl+Alt+P` depuis Outils > Options > Environnement > Clavier.
+- Conserve le navigateur hiérarchique visuel introduit en 1.3.11.
+
 ## Version 1.3.11 — hiérarchie visuelle du navigateur WPF
 
 - Refonte de l’arborescence du navigateur principal et du Visual Pack Editor.

@@ -128,7 +128,7 @@
         </Grid.RowDefinitions>
 
         <StackPanel Grid.Row="0">
-            <TextBlock FontSize="19" FontWeight="SemiBold" Text="JC Lib — Visual Pack Editor avancé 1.3.11" />
+            <TextBlock FontSize="19" FontWeight="SemiBold" Text="JC Lib — Visual Pack Editor avancé 1.3.12" />
             <TextBlock x:Name="PackFilePathText" Margin="0,3,0,0" Foreground="{DynamicResource SecondaryTextBrush}" TextWrapping="Wrap" />
         </StackPanel>
 
