@@ -3,9 +3,9 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         Title="JC Lib — apparence"
         Width="640"
-        Height="700"
-        MinWidth="560"
-        MinHeight="610"
+        Height="860"
+        MinWidth="580"
+        MinHeight="680"
         WindowStartupLocation="CenterOwner"
         Background="{DynamicResource BackgroundBrush}"
         Foreground="{DynamicResource TextBrush}">
@@ -20,6 +20,15 @@
         <SolidColorBrush x:Key="AccentBrush" Color="#8FC7FF" />
         <SolidColorBrush x:Key="BorderBrush" Color="#666666" />
         <SolidColorBrush x:Key="ButtonTextBrush" Color="#111111" />
+        <SolidColorBrush x:Key="TreeRootBrush" Color="#8FC7FF" />
+        <SolidColorBrush x:Key="TreePackBrush" Color="#E5C07B" />
+        <SolidColorBrush x:Key="TreeEnvironmentBrush" Color="#D7BA7D" />
+        <SolidColorBrush x:Key="TreeLibraryBrush" Color="#4FC1FF" />
+        <SolidColorBrush x:Key="TreeCategoryBrush" Color="#569CD6" />
+        <SolidColorBrush x:Key="TreeGroupBrush" Color="#C586C0" />
+        <SolidColorBrush x:Key="TreeElementBrush" Color="#B5CEA8" />
+        <SolidColorBrush x:Key="TreeBadgeBrush" Color="#3E3E42" />
+        <SolidColorBrush x:Key="TreeIconTextBrush" Color="#111111" />
         <Style TargetType="TextBlock"><Setter Property="Foreground" Value="{DynamicResource TextBrush}" /></Style>
         <Style TargetType="Button"><Setter Property="Margin" Value="0,0,6,4" /><Setter Property="Padding" Value="9,4" /><Setter Property="Foreground" Value="{DynamicResource ButtonTextBrush}" /></Style>
         <Style TargetType="TextBox"><Setter Property="Background" Value="{DynamicResource InputBrush}" /><Setter Property="Foreground" Value="{DynamicResource TextBrush}" /><Setter Property="BorderBrush" Value="{DynamicResource BorderBrush}" /><Setter Property="CaretBrush" Value="{DynamicResource TextBrush}" /></Style>
@@ -31,27 +40,43 @@
         <StackPanel>
             <TextBlock FontSize="18" FontWeight="SemiBold" Text="Apparence de JC Lib" />
             <TextBlock Margin="0,4,0,10" Foreground="{DynamicResource SecondaryTextBrush}" TextWrapping="Wrap"
-                       Text="Les couleurs sont stockées localement et appliquées au navigateur ainsi qu’au Visual Pack Editor. Utilise le thème sombre accessible pour corriger les textes noirs sur fond gris." />
+                       Text="Les couleurs sont stockées localement et appliquées au navigateur ainsi qu’au Visual Pack Editor. La palette de hiérarchie distingue visuellement environnements, bibliothèques, catégories, groupes et éléments." />
         </StackPanel>
         <Border Grid.Row="1" Padding="10" Background="{DynamicResource PanelBrush}" BorderBrush="{DynamicResource BorderBrush}" BorderThickness="1" CornerRadius="3">
-            <Grid>
-                <Grid.ColumnDefinitions><ColumnDefinition Width="170" /><ColumnDefinition Width="*" /><ColumnDefinition Width="Auto" /></Grid.ColumnDefinitions>
-                <Grid.RowDefinitions>
-                    <RowDefinition Height="Auto" /><RowDefinition Height="Auto" /><RowDefinition Height="Auto" /><RowDefinition Height="Auto" />
-                    <RowDefinition Height="Auto" /><RowDefinition Height="Auto" /><RowDefinition Height="Auto" /><RowDefinition Height="Auto" />
-                    <RowDefinition Height="Auto" /><RowDefinition Height="Auto" />
-                </Grid.RowDefinitions>
-                <TextBlock Grid.Row="0" Margin="0,6" Text="Fond principal" /><TextBox x:Name="BackgroundTextBox" Grid.Row="0" Grid.Column="1" Margin="0,3" Padding="5,3" TextChanged="OnThemeFieldChanged" /><Button Grid.Row="0" Grid.Column="2" Tag="BackgroundTextBox" Click="OnChooseColorClick" Content="..." />
-                <TextBlock Grid.Row="1" Margin="0,6" Text="Panneaux" /><TextBox x:Name="PanelTextBox" Grid.Row="1" Grid.Column="1" Margin="0,3" Padding="5,3" TextChanged="OnThemeFieldChanged" /><Button Grid.Row="1" Grid.Column="2" Tag="PanelTextBox" Click="OnChooseColorClick" Content="..." />
-                <TextBlock Grid.Row="2" Margin="0,6" Text="Champs et arbres" /><TextBox x:Name="InputTextBox" Grid.Row="2" Grid.Column="1" Margin="0,3" Padding="5,3" TextChanged="OnThemeFieldChanged" /><Button Grid.Row="2" Grid.Column="2" Tag="InputTextBox" Click="OnChooseColorClick" Content="..." />
-                <TextBlock Grid.Row="3" Margin="0,6" Text="Fond listes déroulantes" /><TextBox x:Name="DropdownBackgroundTextBox" Grid.Row="3" Grid.Column="1" Margin="0,3" Padding="5,3" TextChanged="OnThemeFieldChanged" /><Button Grid.Row="3" Grid.Column="2" Tag="DropdownBackgroundTextBox" Click="OnChooseColorClick" Content="..." />
-                <TextBlock Grid.Row="4" Margin="0,6" Text="Texte listes déroulantes" /><TextBox x:Name="DropdownTextTextBox" Grid.Row="4" Grid.Column="1" Margin="0,3" Padding="5,3" TextChanged="OnThemeFieldChanged" /><Button Grid.Row="4" Grid.Column="2" Tag="DropdownTextTextBox" Click="OnChooseColorClick" Content="..." />
-                <TextBlock Grid.Row="5" Margin="0,6" Text="Texte principal" /><TextBox x:Name="TextTextBox" Grid.Row="5" Grid.Column="1" Margin="0,3" Padding="5,3" TextChanged="OnThemeFieldChanged" /><Button Grid.Row="5" Grid.Column="2" Tag="TextTextBox" Click="OnChooseColorClick" Content="..." />
-                <TextBlock Grid.Row="6" Margin="0,6" Text="Texte secondaire" /><TextBox x:Name="SecondaryTextBox" Grid.Row="6" Grid.Column="1" Margin="0,3" Padding="5,3" TextChanged="OnThemeFieldChanged" /><Button Grid.Row="6" Grid.Column="2" Tag="SecondaryTextBox" Click="OnChooseColorClick" Content="..." />
-                <TextBlock Grid.Row="7" Margin="0,6" Text="Accent" /><TextBox x:Name="AccentTextBox" Grid.Row="7" Grid.Column="1" Margin="0,3" Padding="5,3" TextChanged="OnThemeFieldChanged" /><Button Grid.Row="7" Grid.Column="2" Tag="AccentTextBox" Click="OnChooseColorClick" Content="..." />
-                <TextBlock Grid.Row="8" Margin="0,6" Text="Bordures" /><TextBox x:Name="BorderTextBox" Grid.Row="8" Grid.Column="1" Margin="0,3" Padding="5,3" TextChanged="OnThemeFieldChanged" /><Button Grid.Row="8" Grid.Column="2" Tag="BorderTextBox" Click="OnChooseColorClick" Content="..." />
-                <TextBlock Grid.Row="9" Margin="0,6" Text="Texte des boutons" /><TextBox x:Name="ButtonTextBox" Grid.Row="9" Grid.Column="1" Margin="0,3" Padding="5,3" TextChanged="OnThemeFieldChanged" /><Button Grid.Row="9" Grid.Column="2" Tag="ButtonTextBox" Click="OnChooseColorClick" Content="..." />
-            </Grid>
+            <ScrollViewer VerticalScrollBarVisibility="Auto">
+                <Grid>
+                    <Grid.ColumnDefinitions><ColumnDefinition Width="190" /><ColumnDefinition Width="*" /><ColumnDefinition Width="Auto" /></Grid.ColumnDefinitions>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto" /><RowDefinition Height="Auto" /><RowDefinition Height="Auto" /><RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" /><RowDefinition Height="Auto" /><RowDefinition Height="Auto" /><RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" /><RowDefinition Height="Auto" /><RowDefinition Height="Auto" /><RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" /><RowDefinition Height="Auto" /><RowDefinition Height="Auto" /><RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" /><RowDefinition Height="Auto" /><RowDefinition Height="Auto" /><RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                    </Grid.RowDefinitions>
+                    <TextBlock Grid.Row="0" Grid.ColumnSpan="3" Margin="0,0,0,4" FontWeight="SemiBold" Text="Interface générale" />
+                    <TextBlock Grid.Row="1" Margin="0,6" Text="Fond principal" /><TextBox x:Name="BackgroundTextBox" Grid.Row="1" Grid.Column="1" Margin="0,3" Padding="5,3" TextChanged="OnThemeFieldChanged" /><Button Grid.Row="1" Grid.Column="2" Tag="BackgroundTextBox" Click="OnChooseColorClick" Content="..." />
+                    <TextBlock Grid.Row="2" Margin="0,6" Text="Panneaux" /><TextBox x:Name="PanelTextBox" Grid.Row="2" Grid.Column="1" Margin="0,3" Padding="5,3" TextChanged="OnThemeFieldChanged" /><Button Grid.Row="2" Grid.Column="2" Tag="PanelTextBox" Click="OnChooseColorClick" Content="..." />
+                    <TextBlock Grid.Row="3" Margin="0,6" Text="Champs et arbres" /><TextBox x:Name="InputTextBox" Grid.Row="3" Grid.Column="1" Margin="0,3" Padding="5,3" TextChanged="OnThemeFieldChanged" /><Button Grid.Row="3" Grid.Column="2" Tag="InputTextBox" Click="OnChooseColorClick" Content="..." />
+                    <TextBlock Grid.Row="4" Margin="0,6" Text="Fond listes déroulantes" /><TextBox x:Name="DropdownBackgroundTextBox" Grid.Row="4" Grid.Column="1" Margin="0,3" Padding="5,3" TextChanged="OnThemeFieldChanged" /><Button Grid.Row="4" Grid.Column="2" Tag="DropdownBackgroundTextBox" Click="OnChooseColorClick" Content="..." />
+                    <TextBlock Grid.Row="5" Margin="0,6" Text="Texte listes déroulantes" /><TextBox x:Name="DropdownTextTextBox" Grid.Row="5" Grid.Column="1" Margin="0,3" Padding="5,3" TextChanged="OnThemeFieldChanged" /><Button Grid.Row="5" Grid.Column="2" Tag="DropdownTextTextBox" Click="OnChooseColorClick" Content="..." />
+                    <TextBlock Grid.Row="6" Margin="0,6" Text="Texte principal" /><TextBox x:Name="TextTextBox" Grid.Row="6" Grid.Column="1" Margin="0,3" Padding="5,3" TextChanged="OnThemeFieldChanged" /><Button Grid.Row="6" Grid.Column="2" Tag="TextTextBox" Click="OnChooseColorClick" Content="..." />
+                    <TextBlock Grid.Row="7" Margin="0,6" Text="Texte secondaire" /><TextBox x:Name="SecondaryTextBox" Grid.Row="7" Grid.Column="1" Margin="0,3" Padding="5,3" TextChanged="OnThemeFieldChanged" /><Button Grid.Row="7" Grid.Column="2" Tag="SecondaryTextBox" Click="OnChooseColorClick" Content="..." />
+                    <TextBlock Grid.Row="8" Margin="0,6" Text="Accent" /><TextBox x:Name="AccentTextBox" Grid.Row="8" Grid.Column="1" Margin="0,3" Padding="5,3" TextChanged="OnThemeFieldChanged" /><Button Grid.Row="8" Grid.Column="2" Tag="AccentTextBox" Click="OnChooseColorClick" Content="..." />
+                    <TextBlock Grid.Row="9" Margin="0,6" Text="Bordures" /><TextBox x:Name="BorderTextBox" Grid.Row="9" Grid.Column="1" Margin="0,3" Padding="5,3" TextChanged="OnThemeFieldChanged" /><Button Grid.Row="9" Grid.Column="2" Tag="BorderTextBox" Click="OnChooseColorClick" Content="..." />
+                    <TextBlock Grid.Row="10" Margin="0,6" Text="Texte des boutons" /><TextBox x:Name="ButtonTextBox" Grid.Row="10" Grid.Column="1" Margin="0,3" Padding="5,3" TextChanged="OnThemeFieldChanged" /><Button Grid.Row="10" Grid.Column="2" Tag="ButtonTextBox" Click="OnChooseColorClick" Content="..." />
+                    <TextBlock Grid.Row="11" Grid.ColumnSpan="3" Margin="0,13,0,4" FontWeight="SemiBold" Text="Palette de la hiérarchie" />
+                    <TextBlock Grid.Row="12" Margin="0,6" Text="Racine du catalogue" /><TextBox x:Name="TreeRootTextBox" Grid.Row="12" Grid.Column="1" Margin="0,3" Padding="5,3" TextChanged="OnThemeFieldChanged" /><Button Grid.Row="12" Grid.Column="2" Tag="TreeRootTextBox" Click="OnChooseColorClick" Content="..." />
+                    <TextBlock Grid.Row="13" Margin="0,6" Text="Pack" /><TextBox x:Name="TreePackTextBox" Grid.Row="13" Grid.Column="1" Margin="0,3" Padding="5,3" TextChanged="OnThemeFieldChanged" /><Button Grid.Row="13" Grid.Column="2" Tag="TreePackTextBox" Click="OnChooseColorClick" Content="..." />
+                    <TextBlock Grid.Row="14" Margin="0,6" Text="Environnement" /><TextBox x:Name="TreeEnvironmentTextBox" Grid.Row="14" Grid.Column="1" Margin="0,3" Padding="5,3" TextChanged="OnThemeFieldChanged" /><Button Grid.Row="14" Grid.Column="2" Tag="TreeEnvironmentTextBox" Click="OnChooseColorClick" Content="..." />
+                    <TextBlock Grid.Row="15" Margin="0,6" Text="Bibliothèque" /><TextBox x:Name="TreeLibraryTextBox" Grid.Row="15" Grid.Column="1" Margin="0,3" Padding="5,3" TextChanged="OnThemeFieldChanged" /><Button Grid.Row="15" Grid.Column="2" Tag="TreeLibraryTextBox" Click="OnChooseColorClick" Content="..." />
+                    <TextBlock Grid.Row="16" Margin="0,6" Text="Catégorie" /><TextBox x:Name="TreeCategoryTextBox" Grid.Row="16" Grid.Column="1" Margin="0,3" Padding="5,3" TextChanged="OnThemeFieldChanged" /><Button Grid.Row="16" Grid.Column="2" Tag="TreeCategoryTextBox" Click="OnChooseColorClick" Content="..." />
+                    <TextBlock Grid.Row="17" Margin="0,6" Text="Groupe" /><TextBox x:Name="TreeGroupTextBox" Grid.Row="17" Grid.Column="1" Margin="0,3" Padding="5,3" TextChanged="OnThemeFieldChanged" /><Button Grid.Row="17" Grid.Column="2" Tag="TreeGroupTextBox" Click="OnChooseColorClick" Content="..." />
+                    <TextBlock Grid.Row="18" Margin="0,6" Text="Élément terminal" /><TextBox x:Name="TreeElementTextBox" Grid.Row="18" Grid.Column="1" Margin="0,3" Padding="5,3" TextChanged="OnThemeFieldChanged" /><Button Grid.Row="18" Grid.Column="2" Tag="TreeElementTextBox" Click="OnChooseColorClick" Content="..." />
+                    <TextBlock Grid.Row="19" Margin="0,6" Text="Fond des badges" /><TextBox x:Name="TreeBadgeTextBox" Grid.Row="19" Grid.Column="1" Margin="0,3" Padding="5,3" TextChanged="OnThemeFieldChanged" /><Button Grid.Row="19" Grid.Column="2" Tag="TreeBadgeTextBox" Click="OnChooseColorClick" Content="..." />
+                    <TextBlock Grid.Row="20" Margin="0,6" Text="Texte des icônes" /><TextBox x:Name="TreeIconTextTextBox" Grid.Row="20" Grid.Column="1" Margin="0,3" Padding="5,3" TextChanged="OnThemeFieldChanged" /><Button Grid.Row="20" Grid.Column="2" Tag="TreeIconTextTextBox" Click="OnChooseColorClick" Content="..." />
+                </Grid>
+            </ScrollViewer>
         </Border>
         <Border x:Name="PreviewBorder" Grid.Row="2" Margin="0,10,0,8" Padding="10" Background="{DynamicResource PanelBrush}" BorderBrush="{DynamicResource BorderBrush}" BorderThickness="1" CornerRadius="3">
             <StackPanel>
@@ -59,6 +84,13 @@
                 <TextBlock Margin="0,4,0,0" Text="Bibliothèque > Catégorie > Groupe > Élément" />
                 <TextBlock Margin="0,2,0,0" Foreground="{DynamicResource SecondaryTextBrush}" Text="Texte secondaire et métadonnées" />
                 <TextBlock Margin="0,2,0,0" Foreground="{DynamicResource AccentBrush}" Text="Accent : source du pack et liens visuels" />
+                <WrapPanel Margin="0,8,0,0">
+                    <Border Margin="0,0,5,0" Padding="5,2" CornerRadius="4" Background="{DynamicResource TreeEnvironmentBrush}"><TextBlock FontWeight="Bold" Foreground="{DynamicResource TreeIconTextBrush}" Text="E env"/></Border>
+                    <Border Margin="0,0,5,0" Padding="5,2" CornerRadius="4" Background="{DynamicResource TreeLibraryBrush}"><TextBlock FontWeight="Bold" Foreground="{DynamicResource TreeIconTextBrush}" Text="L lib"/></Border>
+                    <Border Margin="0,0,5,0" Padding="5,2" CornerRadius="4" Background="{DynamicResource TreeCategoryBrush}"><TextBlock FontWeight="Bold" Foreground="{DynamicResource TreeIconTextBrush}" Text="C cat"/></Border>
+                    <Border Margin="0,0,5,0" Padding="5,2" CornerRadius="4" Background="{DynamicResource TreeGroupBrush}"><TextBlock FontWeight="Bold" Foreground="{DynamicResource TreeIconTextBrush}" Text="G group"/></Border>
+                    <Border Padding="5,2" CornerRadius="4" Background="{DynamicResource TreeElementBrush}"><TextBlock FontWeight="Bold" Foreground="{DynamicResource TreeIconTextBrush}" Text="ƒ fn"/></Border>
+                </WrapPanel>
                 <ComboBox Margin="0,7,0,0" Width="260" HorizontalAlignment="Left" SelectedIndex="0">
                     <ComboBoxItem Content="Aperçu liste déroulante" />
                     <ComboBoxItem Content="Environnement QT" />

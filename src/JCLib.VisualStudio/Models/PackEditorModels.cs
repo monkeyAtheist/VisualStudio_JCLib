@@ -34,6 +34,12 @@ public sealed class PackEditorNode : INotifyPropertyChanged
         JsonObject = jsonObject ?? throw new ArgumentNullException(nameof(jsonObject));
         Parent = parent;
         ParentArray = parentArray;
+        Children.CollectionChanged += (_, __) =>
+        {
+            Notify(nameof(Header));
+            Notify(nameof(CountLabel));
+            Notify(nameof(ShowsCount));
+        };
     }
 
     public event PropertyChangedEventHandler? PropertyChanged;
@@ -108,6 +114,103 @@ public sealed class PackEditorNode : INotifyPropertyChanged
     public string Header => Kind == PackEditorNodeKind.Element
         ? Name
         : $"{Name} ({Children.Count})";
+
+    public string CountLabel => Children.Count.ToString();
+
+    public bool ShowsCount => Kind != PackEditorNodeKind.Element;
+
+    public string VisualKindLabel => Kind == PackEditorNodeKind.Element
+        ? GetElementKindBadge(JsonObject["symbolKind"]?.Value<string>())
+        : Kind switch
+        {
+            PackEditorNodeKind.Pack => "pack",
+            PackEditorNodeKind.Environment => "env",
+            PackEditorNodeKind.Library => "lib",
+            PackEditorNodeKind.Category => "cat",
+            PackEditorNodeKind.Group => "group",
+            _ => "node",
+        };
+
+    public string VisualRoleName => Kind switch
+    {
+        PackEditorNodeKind.Pack => "Pack",
+        PackEditorNodeKind.Environment => "Environnement",
+        PackEditorNodeKind.Library => "Bibliothèque",
+        PackEditorNodeKind.Category => "Catégorie",
+        PackEditorNodeKind.Group => "Groupe",
+        PackEditorNodeKind.Element => GetElementKindName(JsonObject["symbolKind"]?.Value<string>()),
+        _ => "Nœud",
+    };
+
+    public string VisualGlyph => Kind == PackEditorNodeKind.Element
+        ? GetElementGlyph(JsonObject["symbolKind"]?.Value<string>())
+        : Kind switch
+        {
+            PackEditorNodeKind.Pack => "P",
+            PackEditorNodeKind.Environment => "E",
+            PackEditorNodeKind.Library => "L",
+            PackEditorNodeKind.Category => "C",
+            PackEditorNodeKind.Group => "G",
+            _ => "•",
+        };
+
+    private static string GetElementKindBadge(string? value) => (value ?? string.Empty).Trim().ToLowerInvariant() switch
+    {
+        "function" => "fn",
+        "method" => "method",
+        "metamethod" => "meta",
+        "macro" => "macro",
+        "command" => "cmd",
+        "snippet" => "snippet",
+        "keyword" => "kw",
+        "class" => "class",
+        "struct" => "struct",
+        "enum" => "enum",
+        "interface" => "iface",
+        "type" => "type",
+        "tag" => "tag",
+        "property" => "prop",
+        "event" => "event",
+        "operator" => "op",
+        _ => "symbol",
+    };
+
+    private static string GetElementKindName(string? value) => (value ?? string.Empty).Trim().ToLowerInvariant() switch
+    {
+        "function" => "Fonction",
+        "method" => "Méthode",
+        "metamethod" => "Métaméthode",
+        "macro" => "Macro",
+        "command" => "Commande",
+        "snippet" => "Snippet",
+        "keyword" => "Mot-clé",
+        "class" => "Classe",
+        "struct" => "Structure",
+        "enum" => "Énumération",
+        "interface" => "Interface",
+        "type" => "Type",
+        "tag" => "Balise",
+        "property" => "Propriété",
+        "event" => "Événement",
+        "operator" => "Opérateur",
+        _ => "Élément",
+    };
+
+    private static string GetElementGlyph(string? value) => (value ?? string.Empty).Trim().ToLowerInvariant() switch
+    {
+        "function" or "method" or "metamethod" => "ƒ",
+        "macro" => "#",
+        "command" => ">",
+        "keyword" => "K",
+        "class" or "struct" or "enum" or "interface" or "type" => "T",
+        "tag" => "<>",
+        "property" => "p",
+        "event" => "⚡",
+        "operator" => "±",
+        _ => "◇",
+    };
+
+    public string VisualToolTip => $"{VisualRoleName} — {Path}";
 
     public string Path => Parent is null ? Name : $"{Parent.Path} > {Name}";
 

@@ -41,6 +41,12 @@ public sealed class CatalogNode : INotifyPropertyChanged
         Name = string.IsNullOrWhiteSpace(name) ? "<sans nom>" : name.Trim();
         Kind = kind;
         Entry = entry;
+        Children.CollectionChanged += (_, __) =>
+        {
+            OnPropertyChanged(nameof(Header));
+            OnPropertyChanged(nameof(CountLabel));
+            OnPropertyChanged(nameof(ShowsCount));
+        };
     }
 
     public string Name { get; }
@@ -66,6 +72,112 @@ public sealed class CatalogNode : INotifyPropertyChanged
     public string Header => Kind == CatalogNodeKind.Element
         ? Name
         : $"{Name} ({Children.Count})";
+
+    /// <summary>
+    /// Compact visual metadata consumed by the WPF tree templates.  Keeping it
+    /// on the model avoids brittle XAML converters and gives the browser and
+    /// editor the same visual language.
+    /// </summary>
+    public string CountLabel => Children.Count.ToString();
+
+    public bool ShowsCount => Kind != CatalogNodeKind.Element;
+
+    public string VisualKindLabel => Kind == CatalogNodeKind.Element
+        ? GetElementKindBadge(Entry?.SymbolKind)
+        : Kind switch
+        {
+            CatalogNodeKind.Root => "root",
+            CatalogNodeKind.Pack => "pack",
+            CatalogNodeKind.Environment => "env",
+            CatalogNodeKind.Library => "lib",
+            CatalogNodeKind.Category => "cat",
+            CatalogNodeKind.Group => "group",
+            _ => "node",
+        };
+
+    public string VisualRoleName => Kind switch
+    {
+        CatalogNodeKind.Root => "Catalogue",
+        CatalogNodeKind.Pack => "Pack",
+        CatalogNodeKind.Environment => "Environnement",
+        CatalogNodeKind.Library => "Bibliothèque",
+        CatalogNodeKind.Category => "Catégorie",
+        CatalogNodeKind.Group => "Groupe",
+        CatalogNodeKind.Element => GetElementKindName(Entry?.SymbolKind),
+        _ => "Nœud",
+    };
+
+    public string VisualGlyph => Kind switch
+    {
+        CatalogNodeKind.Root => "◎",
+        CatalogNodeKind.Pack => "P",
+        CatalogNodeKind.Environment => "E",
+        CatalogNodeKind.Library => "L",
+        CatalogNodeKind.Category => "C",
+        CatalogNodeKind.Group => "G",
+        CatalogNodeKind.Element => GetElementGlyph(Entry?.SymbolKind),
+        _ => "•",
+    };
+
+    public string VisualToolTip => Entry is null
+        ? $"{VisualRoleName} — {Name}"
+        : $"{VisualRoleName} — {Entry.Path}";
+
+    private static string GetElementKindBadge(string? value) => (value ?? string.Empty).Trim().ToLowerInvariant() switch
+    {
+        "function" => "fn",
+        "method" => "method",
+        "metamethod" => "meta",
+        "macro" => "macro",
+        "command" => "cmd",
+        "snippet" => "snippet",
+        "keyword" => "kw",
+        "class" => "class",
+        "struct" => "struct",
+        "enum" => "enum",
+        "interface" => "iface",
+        "type" => "type",
+        "tag" => "tag",
+        "property" => "prop",
+        "event" => "event",
+        "operator" => "op",
+        _ => "symbol",
+    };
+
+    private static string GetElementKindName(string? value) => (value ?? string.Empty).Trim().ToLowerInvariant() switch
+    {
+        "function" => "Fonction",
+        "method" => "Méthode",
+        "metamethod" => "Métaméthode",
+        "macro" => "Macro",
+        "command" => "Commande",
+        "snippet" => "Snippet",
+        "keyword" => "Mot-clé",
+        "class" => "Classe",
+        "struct" => "Structure",
+        "enum" => "Énumération",
+        "interface" => "Interface",
+        "type" => "Type",
+        "tag" => "Balise",
+        "property" => "Propriété",
+        "event" => "Événement",
+        "operator" => "Opérateur",
+        _ => "Élément",
+    };
+
+    private static string GetElementGlyph(string? value) => (value ?? string.Empty).Trim().ToLowerInvariant() switch
+    {
+        "function" or "method" or "metamethod" => "ƒ",
+        "macro" => "#",
+        "command" => ">",
+        "keyword" => "K",
+        "class" or "struct" or "enum" or "interface" or "type" => "T",
+        "tag" => "<>",
+        "property" => "p",
+        "event" => "⚡",
+        "operator" => "±",
+        _ => "◇",
+    };
 
     public event PropertyChangedEventHandler? PropertyChanged;
     private void OnPropertyChanged([CallerMemberName] string? propertyName = null) => PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
@@ -131,6 +243,12 @@ public sealed class CatalogPickerConfig
 
     public bool MultiSelect { get; set; }
 
+    /// <summary>
+    /// Preserve the picker declaration order when multiple items are selected.
+    /// Useful for generated source blocks such as DllMain lifecycle cases.
+    /// </summary>
+    public bool PreserveSourceOrder { get; set; }
+
     public string ValueSeparator { get; set; } = " | ";
 
     public string EmptyValue { get; set; } = string.Empty;
@@ -192,6 +310,13 @@ public sealed class CatalogParameter
     public IReadOnlyList<CatalogChoice> Options { get; set; } = Array.Empty<CatalogChoice>();
 
     public CatalogPickerConfig? PickerConfig { get; set; }
+
+    /// <summary>
+    /// Optional mapping from the raw parameter choice to the fragment inserted
+    /// in the template. The mapped fragment may itself contain placeholders
+    /// resolved by subsequent parameters.
+    /// </summary>
+    public IReadOnlyDictionary<string, string> InsertValueMap { get; set; } = new Dictionary<string, string>(StringComparer.Ordinal);
 
     public CatalogEnabledWhen? EnabledWhen { get; set; }
 }

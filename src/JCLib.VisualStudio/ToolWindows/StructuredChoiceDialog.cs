@@ -44,6 +44,10 @@ internal sealed class StructuredChoiceDialog : Window
             IsReadOnly = true,
             Padding = new Thickness(5, 3, 5, 3),
             TextWrapping = TextWrapping.Wrap,
+            AcceptsReturn = true,
+            MinHeight = 56,
+            MaxHeight = 180,
+            VerticalScrollBarVisibility = ScrollBarVisibility.Auto,
         };
         bottom.Children.Add(_selectionTextBox);
         _validationTextBlock = new TextBlock
@@ -188,11 +192,16 @@ internal sealed class StructuredChoiceDialog : Window
         return panel;
     }
 
-    private IEnumerable<CatalogChoice> GetSelectedChoices() => _choicesListBox.SelectedItems
-        .OfType<ListBoxItem>()
-        .Select(item => item.Tag as CatalogChoice)
-        .Where(choice => choice is not null)
-        .Select(choice => choice!);
+    private IEnumerable<CatalogChoice> GetSelectedChoices()
+    {
+        IEnumerable<ListBoxItem> items = _config.PreserveSourceOrder
+            ? _choicesListBox.Items.OfType<ListBoxItem>().Where(item => item.IsSelected)
+            : _choicesListBox.SelectedItems.OfType<ListBoxItem>();
+        return items
+            .Select(item => item.Tag as CatalogChoice)
+            .Where(choice => choice is not null)
+            .Select(choice => choice!);
+    }
 
     private string BuildSelectedValue()
     {

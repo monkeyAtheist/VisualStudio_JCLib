@@ -610,6 +610,7 @@ public static class CatalogLoader
             Sections = sections,
             ApplyDefaultIfEmpty = picker["applyDefaultIfEmpty"]?.Value<bool?>() ?? true,
             MultiSelect = picker["multiSelect"]?.Value<bool?>() ?? false,
+            PreserveSourceOrder = picker["preserveSourceOrder"]?.Value<bool?>() ?? false,
             ValueSeparator = Normalize(picker["valueSeparator"]?.Value<string>(), " | ", trim: false),
             EmptyValue = Normalize(picker["emptyValue"]?.Value<string>(), string.Empty, trim: false),
             DefaultTargetIndex = picker["defaultTargetIndex"]?.Value<int?>() ?? -1,
@@ -654,6 +655,18 @@ public static class CatalogLoader
             .Select(value => value.Trim())
             .Distinct(StringComparer.Ordinal)
             .ToArray();
+    }
+
+    private static IReadOnlyDictionary<string, string> ParseStringMap(JToken? token)
+    {
+        if (token is not JObject map) return new Dictionary<string, string>(StringComparer.Ordinal);
+        return map.Properties()
+            .Where(property => !string.IsNullOrWhiteSpace(property.Name))
+            .GroupBy(property => property.Name.Trim(), StringComparer.Ordinal)
+            .ToDictionary(
+                group => group.Key,
+                group => group.First().Value.Type == JTokenType.Null ? string.Empty : group.First().Value.ToString(),
+                StringComparer.Ordinal);
     }
 
     private static void AddGroups(
@@ -730,6 +743,7 @@ public static class CatalogLoader
                         Presets = ParseChoices(parameter.Presets),
                         Options = ParseChoices(parameter.Options),
                         PickerConfig = ParsePickerConfig(parameter.PickerConfig),
+                        InsertValueMap = ParseStringMap(parameter.InsertValueMap),
                         EnabledWhen = ParseEnabledWhen(parameter.EnabledWhen),
                     })
                     .ToArray(),
@@ -855,6 +869,7 @@ public static class CatalogLoader
         [DataMember(Name = "presets")] public JToken? Presets { get; set; }
         [DataMember(Name = "options")] public JToken? Options { get; set; }
         [DataMember(Name = "pickerConfig")] public JToken? PickerConfig { get; set; }
+        [DataMember(Name = "insertValueMap")] public JToken? InsertValueMap { get; set; }
         [DataMember(Name = "enabledWhen")] public JToken? EnabledWhen { get; set; }
     }
 }

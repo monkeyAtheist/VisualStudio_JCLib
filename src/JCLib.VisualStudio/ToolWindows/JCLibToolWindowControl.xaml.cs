@@ -562,11 +562,22 @@ public partial class JCLibToolWindowControl : UserControl
         editorGrid.ColumnDefinitions.Add(new ColumnDefinition { Width = GridLength.Auto });
         content.Children.Add(editorGrid);
 
+        bool isMultiline = string.Equals(parameterValue.EditorType, "multiline", StringComparison.OrdinalIgnoreCase)
+            || string.Equals(parameterValue.EditorType, "textarea", StringComparison.OrdinalIgnoreCase)
+            || string.Equals(parameterValue.EditorType, "code", StringComparison.OrdinalIgnoreCase)
+            || (parameterValue.Value ?? string.Empty).IndexOf('\n') >= 0
+            || (parameterValue.Value ?? string.Empty).IndexOf('\r') >= 0;
         var textBox = new TextBox
         {
             Text = parameterValue.Value,
             Padding = new Thickness(5, 3, 5, 3),
             ToolTip = $"Valeur insérée pour {parameterValue.Parameter.Name}. Exemple : {parameterValue.Placeholder}",
+            AcceptsReturn = isMultiline,
+            AcceptsTab = isMultiline,
+            TextWrapping = isMultiline ? TextWrapping.NoWrap : TextWrapping.Wrap,
+            VerticalScrollBarVisibility = isMultiline ? ScrollBarVisibility.Auto : ScrollBarVisibility.Disabled,
+            HorizontalScrollBarVisibility = isMultiline ? ScrollBarVisibility.Auto : ScrollBarVisibility.Disabled,
+            MinHeight = isMultiline ? 132 : 0,
         };
         textBox.TextChanged += OnParameterTextChanged;
         editorGrid.Children.Add(textBox);

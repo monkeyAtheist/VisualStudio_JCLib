@@ -34,6 +34,15 @@ public partial class AppearanceDialog : Window
             AccentTextBox.Text = theme.Accent;
             BorderTextBox.Text = theme.Border;
             ButtonTextBox.Text = theme.ButtonText;
+            TreeRootTextBox.Text = theme.TreeRoot;
+            TreePackTextBox.Text = theme.TreePack;
+            TreeEnvironmentTextBox.Text = theme.TreeEnvironment;
+            TreeLibraryTextBox.Text = theme.TreeLibrary;
+            TreeCategoryTextBox.Text = theme.TreeCategory;
+            TreeGroupTextBox.Text = theme.TreeGroup;
+            TreeElementTextBox.Text = theme.TreeElement;
+            TreeBadgeTextBox.Text = theme.TreeBadge;
+            TreeIconTextTextBox.Text = theme.TreeIconText;
         }
         finally { _loading = false; }
         RefreshPreview();
@@ -51,6 +60,15 @@ public partial class AppearanceDialog : Window
         Accent = AccentTextBox.Text.Trim(),
         Border = BorderTextBox.Text.Trim(),
         ButtonText = ButtonTextBox.Text.Trim(),
+        TreeRoot = TreeRootTextBox.Text.Trim(),
+        TreePack = TreePackTextBox.Text.Trim(),
+        TreeEnvironment = TreeEnvironmentTextBox.Text.Trim(),
+        TreeLibrary = TreeLibraryTextBox.Text.Trim(),
+        TreeCategory = TreeCategoryTextBox.Text.Trim(),
+        TreeGroup = TreeGroupTextBox.Text.Trim(),
+        TreeElement = TreeElementTextBox.Text.Trim(),
+        TreeBadge = TreeBadgeTextBox.Text.Trim(),
+        TreeIconText = TreeIconTextTextBox.Text.Trim(),
     };
 
     private void RefreshPreview()

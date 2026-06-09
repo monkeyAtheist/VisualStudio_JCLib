@@ -343,6 +343,7 @@ internal static class SnippetParameterService
                 : index < values.Count
                     ? (values[index].Value ?? string.Empty).Trim()
                     : (parameter.HasExplicitDefaultValue ? parameter.DefaultValue : InferDefaultValue(parameter.Name, parameter.Type, InferEditorType(parameter)));
+            replacement = ResolveParameterizedInsertValue(parameter, replacement);
             if (IsHtmlMarkupEntry(entry) && string.Equals(parameter.Name, "attributes", StringComparison.Ordinal) && replacement.Length > 0 && !char.IsWhiteSpace(replacement[0]))
             {
                 replacement = " " + replacement;
@@ -350,6 +351,14 @@ internal static class SnippetParameterService
             output = Regex.Replace(output, $@"\{{\{{{Regex.Escape(parameter.Name)}\}}\}}", _ => replacement);
         }
         return NormalizeHtmlMarkupText(output, entry);
+    }
+
+    private static string ResolveParameterizedInsertValue(CatalogParameter parameter, string rawValue)
+    {
+        string key = (rawValue ?? string.Empty).Trim();
+        return parameter.InsertValueMap.TryGetValue(key, out string? mappedValue)
+            ? mappedValue ?? string.Empty
+            : rawValue ?? string.Empty;
     }
 
     private static bool IsHtmlMarkupEntry(CatalogEntry entry)

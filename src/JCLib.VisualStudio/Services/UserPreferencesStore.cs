@@ -33,6 +33,19 @@ public sealed class ThemePreferences
     public string Border { get; set; } = "#666666";
     public string ButtonText { get; set; } = "#111111";
 
+    // Hierarchy palette used by the catalog browser and the Visual Pack Editor.
+    // The values intentionally mirror the VS Code explorer: warm environments,
+    // cyan libraries, blue categories, purple groups and green symbols.
+    public string TreeRoot { get; set; } = "#8FC7FF";
+    public string TreePack { get; set; } = "#E5C07B";
+    public string TreeEnvironment { get; set; } = "#D7BA7D";
+    public string TreeLibrary { get; set; } = "#4FC1FF";
+    public string TreeCategory { get; set; } = "#569CD6";
+    public string TreeGroup { get; set; } = "#C586C0";
+    public string TreeElement { get; set; } = "#B5CEA8";
+    public string TreeBadge { get; set; } = "#3E3E42";
+    public string TreeIconText { get; set; } = "#111111";
+
     public static ThemePreferences CreateAccessibleDark() => new ThemePreferences();
 
     public ThemePreferences Clone() => new ThemePreferences
@@ -47,6 +60,15 @@ public sealed class ThemePreferences
         Accent = Accent,
         Border = Border,
         ButtonText = ButtonText,
+        TreeRoot = TreeRoot,
+        TreePack = TreePack,
+        TreeEnvironment = TreeEnvironment,
+        TreeLibrary = TreeLibrary,
+        TreeCategory = TreeCategory,
+        TreeGroup = TreeGroup,
+        TreeElement = TreeElement,
+        TreeBadge = TreeBadge,
+        TreeIconText = TreeIconText,
     };
 }
 
@@ -129,6 +151,16 @@ public static class UserPreferencesStore
         preferences.Theme ??= ThemePreferences.CreateAccessibleDark();
         if (string.IsNullOrWhiteSpace(preferences.Theme.DropdownBackground)) preferences.Theme.DropdownBackground = preferences.Theme.Input;
         if (string.IsNullOrWhiteSpace(preferences.Theme.DropdownText)) preferences.Theme.DropdownText = preferences.Theme.Text;
+        var hierarchyDefaults = ThemePreferences.CreateAccessibleDark();
+        if (string.IsNullOrWhiteSpace(preferences.Theme.TreeRoot)) preferences.Theme.TreeRoot = hierarchyDefaults.TreeRoot;
+        if (string.IsNullOrWhiteSpace(preferences.Theme.TreePack)) preferences.Theme.TreePack = hierarchyDefaults.TreePack;
+        if (string.IsNullOrWhiteSpace(preferences.Theme.TreeEnvironment)) preferences.Theme.TreeEnvironment = hierarchyDefaults.TreeEnvironment;
+        if (string.IsNullOrWhiteSpace(preferences.Theme.TreeLibrary)) preferences.Theme.TreeLibrary = hierarchyDefaults.TreeLibrary;
+        if (string.IsNullOrWhiteSpace(preferences.Theme.TreeCategory)) preferences.Theme.TreeCategory = hierarchyDefaults.TreeCategory;
+        if (string.IsNullOrWhiteSpace(preferences.Theme.TreeGroup)) preferences.Theme.TreeGroup = hierarchyDefaults.TreeGroup;
+        if (string.IsNullOrWhiteSpace(preferences.Theme.TreeElement)) preferences.Theme.TreeElement = hierarchyDefaults.TreeElement;
+        if (string.IsNullOrWhiteSpace(preferences.Theme.TreeBadge)) preferences.Theme.TreeBadge = hierarchyDefaults.TreeBadge;
+        if (string.IsNullOrWhiteSpace(preferences.Theme.TreeIconText)) preferences.Theme.TreeIconText = hierarchyDefaults.TreeIconText;
         return preferences;
     }
 

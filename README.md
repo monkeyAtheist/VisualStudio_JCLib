@@ -1,3 +1,20 @@
+## Version 1.3.11 — hiérarchie visuelle du navigateur WPF
+
+- Refonte de l’arborescence du navigateur principal et du Visual Pack Editor.
+- Icônes compactes colorées pour distinguer racine, pack, environnement, bibliothèque, catégorie, groupe et élément terminal.
+- Badges explicites (`env`, `lib`, `cat`, `group`, `fn`, `macro`, `cmd`, `snippet`, etc.) et compteurs séparés.
+- Légende visuelle dans les deux arbres.
+- Palette de hiérarchie configurable depuis la fenêtre `Apparence`.
+- Conservation du rôle Visual Studio : lecture, import et édition de packs externes ; génération intégrée réservée à VS Code.
+
+## Version 1.3.10 — compatibilité DLL helpers modernes
+
+- Synchronisation du fallback et des catalogues autonomes C, C++ et Win32 issus de JC Lib VS Code 0.7.86.
+- Prise en charge du contrat `insertValueMap` utilisé par la carte unique `GetProcAddress` pour basculer entre résolution par nom et résolution par ordinal.
+- Éditeur multi-ligne pour les paramètres de code généré, notamment les blocs `case` de `DllMain`.
+- Respect optionnel de l’ordre source des choix multiples via `preserveSourceOrder`.
+- La génération des packs intégrés reste exclusivement réservée à l’extension VS Code.
+
 ## Version 1.3.9 — compatibilité Web HTML et ASP.NET Core Razor / CSHTML
 
 - Synchronisation des catalogues autonomes Web 1.6.0 et C# / ASP.NET Core Razor CSHTML 1.3.0.

@@ -10,7 +10,7 @@ using Task = System.Threading.Tasks.Task;
 namespace JCLib.VisualStudio;
 
 [PackageRegistration(UseManagedResourcesOnly = true, AllowsBackgroundLoading = true)]
-[InstalledProductRegistration("JC Lib - Visual Studio", "JC Lib browser with structured parameters, documented options, multi-select pickers, file browsers, external packs and WPF Visual Pack Editor", "1.3.9")]
+[InstalledProductRegistration("JC Lib - Visual Studio", "JC Lib browser with visual hierarchy badges, structured parameters, documented options, multi-select pickers, file browsers, external packs and WPF Visual Pack Editor", "1.3.11")]
 [ProvideMenuResource("Menus.ctmenu", 1)]
 [ProvideToolWindow(typeof(JCLibToolWindow), Style = VsDockStyle.Tabbed, Window = ToolWindowGuids80.SolutionExplorer)]
 [Guid(PackageGuids.PackageString)]

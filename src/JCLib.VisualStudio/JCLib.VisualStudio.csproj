@@ -82,6 +82,21 @@
       <IncludeInVSIX>true</IncludeInVSIX>
     </Content>
 
+    <!-- Standalone C, C++ and Win32 catalogs synchronized with the DLL-helper audit.
+         Included for explicit import; Visual Studio remains a pack consumer and editor. -->
+    <Content Include="Assets\Packs\c_language_pack.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <IncludeInVSIX>true</IncludeInVSIX>
+    </Content>
+    <Content Include="Assets\Packs\cpp_language_pack.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <IncludeInVSIX>true</IncludeInVSIX>
+    </Content>
+    <Content Include="Assets\Packs\windows_api_device_pack.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <IncludeInVSIX>true</IncludeInVSIX>
+    </Content>
+
     <!-- Embedded fallback: the first read-only browser does not depend on the
          final installation layout of the VSIX content files. -->
     <EmbeddedResource Include="Assets\Packs\default_pack.json">

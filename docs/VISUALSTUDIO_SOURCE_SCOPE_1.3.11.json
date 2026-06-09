@@ -1,0 +1,8 @@
+{
+  "status": "ok",
+  "version": "1.3.11",
+  "scope": "Visual Studio 2026 WPF visual hierarchy only",
+  "integratedPackGeneration": "absent by design; remains VS Code only",
+  "catalogJsonChanges": false,
+  "compileStatus": "not-run: Linux environment does not provide Visual Studio 2026, MSBuild or the Visual Studio SDK."
+}

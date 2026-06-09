@@ -24,6 +24,15 @@ public static class ThemeService
         Set(root, "AccentBrush", theme.Accent);
         Set(root, "BorderBrush", theme.Border);
         Set(root, "ButtonTextBrush", theme.ButtonText);
+        Set(root, "TreeRootBrush", theme.TreeRoot);
+        Set(root, "TreePackBrush", theme.TreePack);
+        Set(root, "TreeEnvironmentBrush", theme.TreeEnvironment);
+        Set(root, "TreeLibraryBrush", theme.TreeLibrary);
+        Set(root, "TreeCategoryBrush", theme.TreeCategory);
+        Set(root, "TreeGroupBrush", theme.TreeGroup);
+        Set(root, "TreeElementBrush", theme.TreeElement);
+        Set(root, "TreeBadgeBrush", theme.TreeBadge);
+        Set(root, "TreeIconTextBrush", theme.TreeIconText);
     }
 
     public static IReadOnlyList<string> Validate(ThemePreferences theme)
@@ -44,6 +53,15 @@ public static class ThemeService
         ValidateOne(issues, "Accent", theme.Accent);
         ValidateOne(issues, "Bordures", theme.Border);
         ValidateOne(issues, "Texte des boutons", theme.ButtonText);
+        ValidateOne(issues, "Arbre — racine", theme.TreeRoot);
+        ValidateOne(issues, "Arbre — pack", theme.TreePack);
+        ValidateOne(issues, "Arbre — environnement", theme.TreeEnvironment);
+        ValidateOne(issues, "Arbre — bibliothèque", theme.TreeLibrary);
+        ValidateOne(issues, "Arbre — catégorie", theme.TreeCategory);
+        ValidateOne(issues, "Arbre — groupe", theme.TreeGroup);
+        ValidateOne(issues, "Arbre — élément", theme.TreeElement);
+        ValidateOne(issues, "Arbre — badge", theme.TreeBadge);
+        ValidateOne(issues, "Arbre — texte des icônes", theme.TreeIconText);
         return issues;
     }
 

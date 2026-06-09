@@ -1,0 +1,6 @@
+{
+  "status": "ok",
+  "version": "1.3.10",
+  "compileStatus": "not-run: Linux environment does not provide Visual Studio 2026, MSBuild or the Visual Studio SDK.",
+  "errors": []
+}
