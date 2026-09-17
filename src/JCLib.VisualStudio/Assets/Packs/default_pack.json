@@ -286848,5 +286848,5 @@
       ]
     }
   ],
-  "description": "Bundled environments with documented advanced parameter pickers. Lua / MPTLua now includes audited standard-library, MPT operator-interface, switching and Stormworks parameter metadata."
+  "description": "Bundled environments with documented advanced parameter pickers for CVI, C, C++, Qt, SDL, Win32, and Windows device APIs."
 }
